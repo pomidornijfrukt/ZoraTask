@@ -12,8 +12,11 @@
 ## Tech-stack
 
 - Full-Stack
-  - Next.js
+  - [Next.js](https://nextjs.org/)
 - UI and Styling
-  - Tailwindcss4 / Shadcn
+  - [Tailwindcss4](https://tailwindcss.com/docs/installation/framework-guides/nextjs) & [ShadcnUI](https://github.com/shadcn-ui/ui)
 - Database
-  - PostgreSQL
+  - [Drizzle ORM](https://orm.drizzle.team/docs/get-started)
+  - PostgreSQL or Supabase
+- Auth
+  - Better-Auth

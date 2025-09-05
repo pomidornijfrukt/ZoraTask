@@ -1,13 +1,13 @@
 # [ZoraTask](https://github.com/pomidornijfrukt/ZoraTask/)
 
-**Open-source** Agile project management tool with progress and activity tracking. It's like Jira but open-source and without bloat with stronger Progress Tracing integration
+**Open-source** Agile project management tool with progress and activity tracking. It's like Jira but open-source and without bloat with stronger progress and [Activity](https://github.com/ActivityWatch/activitywatch) tracking integration.
 
 ## Features
 
-- Project creation and task management
-- Planning and backlog management
-- Kanban board
-- Time and Activity tracking
+- Project Creation and Task Management
+- Planning and Backlog Management
+- Kanban Board
+- Time and Activity Tracking with [ActivityWatch](https://github.com/ActivityWatch/activitywatch)
 
 ## Tech-stack
 

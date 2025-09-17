@@ -8,6 +8,13 @@
       "when": 1757935952547,
       "tag": "0000_shiny_greymalkin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1758180030251,
+      "tag": "0001_abandoned_electro",
+      "breakpoints": true
     }
   ]
 }

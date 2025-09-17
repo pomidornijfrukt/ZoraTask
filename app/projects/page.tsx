@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Navigation } from "@/components/navigation"
 import { getProjects, getTasksByProject } from "@/lib/data"
 import { Plus, Calendar, Users, CheckCircle, Clock, AlertCircle } from "lucide-react"
 
@@ -47,8 +46,6 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>

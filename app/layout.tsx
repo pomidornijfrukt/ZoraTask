@@ -1,7 +1,10 @@
 import type React from "react"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
-import "./globals.css"
+import "@/styles/globals.css"
+import { Providers } from "./providers"
+import { Header } from "@/components/header"
+import { ThemeProvider } from "@/components/theme-provider"
 
 export default function RootLayout({
   children,
@@ -11,10 +14,17 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body>
-        <Suspense fallback={null}>
-          {children}
-          <Analytics />
-        </Suspense>
+        <ThemeProvider 
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+        >
+          <Suspense fallback={null}>
+            <Header />
+            <Providers>{children}</Providers>
+            <Analytics />
+          </Suspense>
+        </ThemeProvider>
       </body>
     </html>
   )

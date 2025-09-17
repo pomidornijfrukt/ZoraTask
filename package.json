@@ -10,6 +10,7 @@
 		"start": "next start"
 	},
 	"dependencies": {
+    "@daveyplate/better-auth-ui": "^3.1.10",
 		"@dotenvx/dotenvx": "^1.49.0",
 		"@hookform/resolvers": "^3.10.0",
 		"@radix-ui/react-accordion": "1.2.2",

@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
-import { Navigation } from "@/components/navigation"
 import { getProject, getTasksByProject, getMemberById } from "@/lib/data"
 import { Calendar, Users, CheckCircle, Clock, AlertCircle, ArrowLeft, Kanban, BarChart3, Settings } from "lucide-react"
 
@@ -70,8 +69,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">

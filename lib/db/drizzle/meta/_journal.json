@@ -1,27 +1,20 @@
 {
-	"version": "7",
-	"dialect": "postgresql",
-	"entries": [
-		{
-			"idx": 0,
-			"version": "7",
-			"when": 1757935952547,
-			"tag": "0000_shiny_greymalkin",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1758180030251,
-			"tag": "0001_abandoned_electro",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "7",
-			"when": 1758267836495,
-			"tag": "0002_bitter_vindicator",
-			"breakpoints": true
-		}
-	]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1757935952547,
+      "tag": "0000_shiny_greymalkin",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1758180030251,
+      "tag": "0001_abandoned_electro",
+      "breakpoints": true
+    }
+  ]
 }

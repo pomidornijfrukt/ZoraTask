@@ -18,12 +18,13 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
-        >
+        ><Providers>
           <Suspense fallback={null}>
             <Header />
-            <Providers>{children}</Providers>
+            {children}
             <Analytics />
           </Suspense>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

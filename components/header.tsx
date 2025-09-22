@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import Link, { LinkProps } from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Kanban, Home, FolderOpen } from "lucide-react";
+import { Kanban, Home, FolderOpen, LucideIcon } from "lucide-react";
 import { authClient } from "@/lib/auth/auth-client";
 import { UserButton } from "@daveyplate/better-auth-ui";
 import { ThemeToggle } from "./theme-toggle";
@@ -17,21 +17,6 @@ export function Header() {
   // Determine if the user is signed in
   const isSignedIn = !isPending && session?.user;
 
-  const navItems = [
-    {
-      href: "/",
-      label: "Home",
-      icon: Home,
-      active: pathname === "/",
-    },
-    {
-      href: "/projects",
-      label: "Projects",
-      icon: FolderOpen,
-      active: pathname.startsWith("/projects"),
-    },
-  ];
-
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b bg-card">
       {/* Logo and Navigation */}
@@ -42,25 +27,8 @@ export function Header() {
         </Link>
 
         <div className="flex space-x-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.href}
-                variant={item.active ? "default" : "ghost"}
-                size="sm"
-                asChild
-              >
-                <Link
-                  href={item.href}
-                  className="flex items-center space-x-2"
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                </Link>
-              </Button>
-            );
-          })}
+          <NavButton href="/" active={pathname === "/"} label="Home" icon={Home} />
+          <NavButton href="/projects" active={pathname.startsWith("/projects")} label="Projects" icon={FolderOpen} />
         </div>
       </div>
 
@@ -76,9 +44,28 @@ export function Header() {
             Sign In
           </Link>
         ) : (
-          <UserButton />
+          <UserButton size="icon" />
         )}
       </div>
     </header>
   );
+}
+
+
+function NavButton({ href, active, label, icon: Icon }: { href: LinkProps["href"], active: boolean, label: string, icon: LucideIcon }) { 
+  return (
+    <Button
+      variant={active ? "default" : "ghost"}
+      size="sm"
+      asChild
+    >
+      <Link
+        href={href}
+        className="flex items-center space-x-2"
+      >
+        <Icon className="h-4 w-4" />
+        <span>{label}</span>
+      </Link>
+    </Button>
+  )
 }

@@ -44,6 +44,7 @@ export function Header() {
             Sign In
           </Link>
         ) : (
+          // TODO: fix userButton dropdown transform putting it out of bounds
           <UserButton size="icon" />
         )}
       </div>

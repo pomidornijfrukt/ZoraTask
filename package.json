@@ -7,7 +7,9 @@
 		"dev": "next dev",
 		"lint": "biome check",
 		"fix": "biome check --write --unsafe",
-		"start": "next start"
+		"start": "next start",
+		"generate": "drizzle-kit generate",
+		"migrate": "drizzle-kit migrate"
 	},
 	"dependencies": {
 		"@daveyplate/better-auth-ui": "^3.1.10",

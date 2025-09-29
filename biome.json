@@ -16,9 +16,16 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
-			"correctness": "warn",
+			"correctness": {
+				"noNodejsModules": "off"
+			},
 			"security": "warn",
-			"style": "info"
+			"style": {
+				"noDefaultExport": "off"
+			},
+			"suspicious": {
+				"noUnknownAtRules": "off"
+			}
 		},
 		"domains": {
 			"react": "all"

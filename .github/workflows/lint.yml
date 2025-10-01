@@ -28,4 +28,4 @@ jobs:
       run: pnpm add -D -E @biomejs/biome
 
     - name: Run Biome
-      run: pnpm exec biome check --write
+      run: pnpm exec biome check

@@ -1,4 +1,10 @@
-import { AnyPgColumn, PgTable, pgTable, text, timestamp } from "drizzle-orm/pg-core"
+import {
+	type AnyPgColumn,
+	type PgTable,
+	pgTable,
+	text,
+	timestamp,
+} from "drizzle-orm/pg-core"
 import { user } from "./auth-schema"
 import { categories, priorities, projects } from "./project-schema"
 
@@ -19,7 +25,7 @@ export const comments = pgTable("comments", {
 		.defaultNow()
 		.$onUpdate(() => /* @__PURE__ */ new Date())
 		.notNull(),
-}) satisfies PgTable;
+}) satisfies PgTable
 
 export const tasks = pgTable("tasks", {
 	id: text("id").primaryKey(),
@@ -29,9 +35,12 @@ export const tasks = pgTable("tasks", {
 	projectId: text("project_id")
 		.notNull()
 		.references(() => projects.id, { onDelete: "cascade" }),
-	descriptionId: text("description_id").references((): AnyPgColumn => comments.id, {
-		onDelete: "cascade",
-	}),
+	descriptionId: text("description_id").references(
+		(): AnyPgColumn => comments.id,
+		{
+			onDelete: "cascade",
+		},
+	),
 	categoryId: text("category_id").references(() => categories.id, {
 		onDelete: "cascade",
 	}),

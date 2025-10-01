@@ -1,46 +1,46 @@
-import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import {user, organization} from "./auth-schema";
+import { pgTable, text, timestamp } from "drizzle-orm/pg-core"
+import { organization, user } from "./auth-schema"
 
 export const projects = pgTable("projects", {
-  id: text("id").primaryKey(),
-  ownerId: text("owner_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  organizationId: text("organization_id")
-    .notNull()
-    .references(() => organization.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
+	id: text("id").primaryKey(),
+	ownerId: text("owner_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+	organizationId: text("organization_id")
+		.notNull()
+		.references(() => organization.id, { onDelete: "cascade" }),
+	name: text("name").notNull(),
+	description: text("description").notNull(),
+	createdAt: timestamp("created_at").notNull(),
+	updatedAt: timestamp("updated_at")
+		.defaultNow()
+		.$onUpdate(() => /* @__PURE__ */ new Date())
+		.notNull(),
+})
 
 export const projectMemberships = pgTable("projectMemberships", {
-  id: text("id").primaryKey(),
-  memberId: text("member_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  projectId: text("project_id")
-    .notNull()
-    .references(() => projects.id, { onDelete: "cascade" }),
-    joinedAt: timestamp("joined_at").notNull(),
-});
+	id: text("id").primaryKey(),
+	memberId: text("member_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+	projectId: text("project_id")
+		.notNull()
+		.references(() => projects.id, { onDelete: "cascade" }),
+	joinedAt: timestamp("joined_at").notNull(),
+})
 
 export const categories = pgTable("categories", {
-  id: text("id").primaryKey(),
-  projectId: text("project_id")
-    .notNull()
-    .references(() => projects.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-});
+	id: text("id").primaryKey(),
+	projectId: text("project_id")
+		.notNull()
+		.references(() => projects.id, { onDelete: "cascade" }),
+	name: text("name").notNull(),
+})
 
 export const priorities = pgTable("priorities", {
-  id: text("id").primaryKey(),
-  projectId: text("project_id")
-    .notNull()
-    .references(() => projects.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-});
+	id: text("id").primaryKey(),
+	projectId: text("project_id")
+		.notNull()
+		.references(() => projects.id, { onDelete: "cascade" }),
+	name: text("name").notNull(),
+})

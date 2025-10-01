@@ -1,24 +1,24 @@
 import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import {user} from "./auth-schema";
-import { projects } from "./user-schema";
+import { projects, priorities, categories } from "./project-schema";
 
-  export const comments = pgTable("comments", {
-    id: text("id").primaryKey(),
-    authorId: text("author_id")
-      .notNull()
-      .references(()=> user.id, { onDelete: "cascade" }),
-    parentId: text("parent_id")
-      .references((): any => comments.id, { onDelete: "set null" }),
-    taskId: text("task_id")
-      .notNull()
-      .references(() => tasks.id, { onDelete: "cascade" }),
-    body: text("body").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-  });
+export const comments = pgTable("comments", {
+  id: text("id").primaryKey(),
+  authorId: text("author_id")
+    .notNull()
+    .references(()=> user.id, { onDelete: "cascade" }),
+  parentId: text("parent_id")
+    .references((): any => comments.id, { onDelete: "set null" }),
+  taskId: text("task_id")
+    .notNull()
+    .references(() => tasks.id, { onDelete: "cascade" }),
+  body: text("body").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
   
 export const tasks = pgTable("tasks", {
   id: text("id").primaryKey(),
@@ -53,22 +53,6 @@ export const taskAssignees = pgTable("taskAssignees", {
   taskId: text("task_id")
     .notNull()
     .references(() => tasks.id, { onDelete: "cascade" }),
-});
-
-export const categories = pgTable("categories", {
-  id: text("id").primaryKey(),
-  projecId: text("project_id")
-    .notNull()
-    .references(() => projects.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-});
-
-export const priorities = pgTable("priorities", {
-  id: text("id").primaryKey(),
-  projectId: text("project_id")
-    .notNull()
-    .references(() => projects.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
 });
 
 export const attachments = pgTable("attachments", {

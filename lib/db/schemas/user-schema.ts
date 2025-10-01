@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, char, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, char, integer } from "drizzle-orm/pg-core";
 import {user, organization} from "./auth-schema";
 
 export const userProfile = pgTable("userProfile", {
@@ -11,34 +11,6 @@ export const userProfile = pgTable("userProfile", {
   language: char({ length: 2 }),
   age: integer(),
 });
-
-export const projects = pgTable("projects", {
-  id: text("id").primaryKey(),
-  ownerId: text("owner_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  organizationId: text("organization_id")
-    .notNull()
-    .references(() => organization.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
-
-export const projectMemberships = pgTable("projectMemberships", {
-  id: text("id").primaryKey(),
-  memberId: text("member_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  projectId: text("project_id")
-    .notNull()
-    .references(() => projects.id, { onDelete: "cascade" }),
-    joinedAt: timestamp("joined_at").notNull(),
-  });
 
 export const roles = pgTable("roles", {
   id: text("id").primaryKey(),

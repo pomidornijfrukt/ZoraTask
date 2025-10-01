@@ -31,7 +31,7 @@ export const projectMemberships = pgTable("projectMemberships", {
 
 export const categories = pgTable("categories", {
   id: text("id").primaryKey(),
-  projecId: text("project_id")
+  projectId: text("project_id")
     .notNull()
     .references(() => projects.id, { onDelete: "cascade" }),
   name: text("name").notNull(),

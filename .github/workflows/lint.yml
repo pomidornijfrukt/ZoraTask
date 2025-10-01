@@ -1,4 +1,4 @@
-name: Run OXLint
+name: Run Lint
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  run-oxlint:
+  run-biome:
     runs-on: ubuntu-latest
 
     steps:

@@ -48,7 +48,6 @@ export const tasks = pgTable("tasks", {
 		onDelete: "cascade",
 	}),
 	reporterId: text("reporter_id")
-		.notNull()
 		.references(() => user.id, { onDelete: "set null" }),
 	name: text("name").notNull(),
 	executionStatus: text("execution_status"),

@@ -11,7 +11,7 @@ export const projects = pgTable("projects", {
 		.references(() => organization.id, { onDelete: "cascade" }),
 	name: text("name").notNull(),
 	description: text("description").notNull(),
-	createdAt: timestamp("created_at").notNull(),
+	createdAt: timestamp("created_at").defaultNow().notNull(),
 	updatedAt: timestamp("updated_at")
 		.defaultNow()
 		.$onUpdate(() => /* @__PURE__ */ new Date())
@@ -26,7 +26,7 @@ export const projectMemberships = pgTable("projectMemberships", {
 	projectId: text("project_id")
 		.notNull()
 		.references(() => projects.id, { onDelete: "cascade" }),
-	joinedAt: timestamp("joined_at").notNull(),
+	joinedAt: timestamp("joined_at").defaultNow().notNull(),
 })
 
 export const categories = pgTable("categories", {

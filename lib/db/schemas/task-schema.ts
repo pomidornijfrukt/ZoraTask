@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp } from "drizzle-orm/pg-core"
+import { AnyPgColumn, PgTable, pgTable, text, timestamp } from "drizzle-orm/pg-core"
 import { user } from "./auth-schema"
 import { categories, priorities, projects } from "./project-schema"
 
@@ -7,7 +7,7 @@ export const comments = pgTable("comments", {
 	authorId: text("author_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
-	parentId: text("parent_id").references((): any => comments.id, {
+	parentId: text("parent_id").references((): AnyPgColumn => comments.id, {
 		onDelete: "set null",
 	}),
 	taskId: text("task_id")
@@ -19,17 +19,17 @@ export const comments = pgTable("comments", {
 		.defaultNow()
 		.$onUpdate(() => /* @__PURE__ */ new Date())
 		.notNull(),
-})
+}) satisfies PgTable;
 
 export const tasks = pgTable("tasks", {
 	id: text("id").primaryKey(),
-	parentId: text("parent_id").references((): any => tasks.id, {
+	parentId: text("parent_id").references((): AnyPgColumn => tasks.id, {
 		onDelete: "cascade",
 	}),
 	projectId: text("project_id")
 		.notNull()
 		.references(() => projects.id, { onDelete: "cascade" }),
-	descriptionId: text("description_id").references((): any => comments.id, {
+	descriptionId: text("description_id").references((): AnyPgColumn => comments.id, {
 		onDelete: "cascade",
 	}),
 	categoryId: text("category_id").references(() => categories.id, {

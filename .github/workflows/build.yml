@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  run-biome:
+  run-builder:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +24,7 @@ jobs:
     - name: Install pnpm
       run: npm install -g pnpm
 
-    - name: Use dev environmental variables
+    - name: Use environment files
       run: mv .env.development .env.production
 
     - name: Run build

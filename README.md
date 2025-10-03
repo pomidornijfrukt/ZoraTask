@@ -78,6 +78,7 @@ pnpm install
 # dev server
 pnpm run dev
 ```
+Use `pnpm dev` while developing (hot reload).
 
 Project has a set-up biome lint, thus there are a few handy commands for a cleaner code in development:
 
@@ -88,5 +89,3 @@ pnpm run lint
 # fix the code with biome lint
 pnpm run fix
 ```
-
-Use `pnpm dev` while developing (hot reload).

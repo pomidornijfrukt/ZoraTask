@@ -47,8 +47,9 @@ export const tasks = pgTable("tasks", {
 	priorityId: text("priority_id").references(() => priorities.id, {
 		onDelete: "cascade",
 	}),
-	reporterId: text("reporter_id")
-		.references(() => user.id, { onDelete: "set null" }),
+	reporterId: text("reporter_id").references(() => user.id, {
+		onDelete: "set null",
+	}),
 	name: text("name").notNull(),
 	executionStatus: text("execution_status"),
 	createdAt: timestamp("created_at").defaultNow().notNull(),

@@ -24,6 +24,9 @@ jobs:
     - name: Install pnpm
       run: npm install -g pnpm
 
+    - name: Install dependencies
+      run: pnpm install
+
     - name: Use environment files
       run: mv .env.development .env.production
 

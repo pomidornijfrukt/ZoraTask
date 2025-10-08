@@ -1,4 +1,5 @@
 import { Calendar, Plus, Users } from "lucide-react"
+import { headers } from "next/headers"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -9,18 +10,25 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card"
-import { getProjects, getTasksByProject } from "@/lib/data"
+import { auth } from "@/lib/auth"
+import { getProjectMembers, getProjects } from "@/lib/data/projects"
+import { getTasksByProject } from "@/lib/data/task"
 
-export default function ProjectsPage() {
-	const projects = getProjects()
+export default async function ProjectsPage() {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	})
+	const projects = await getProjects(session!.user.id)
 
-	const getProjectStats = (projectId: string) => {
-		const tasks = getTasksByProject(projectId)
-		const completed = tasks.filter((task) => task.status === "done").length
-		const inProgress = tasks.filter(
-			(task) => task.status === "in-progress",
+	const getProjectStats = async (projectId: string) => {
+		const tasks = await getTasksByProject(projectId)
+		const completed = tasks.filter(
+			(task) => task.executionStatus === "done",
 		).length
-		const todo = tasks.filter((task) => task.status === "todo").length
+		const inProgress = tasks.filter(
+			(task) => task.executionStatus === "in-progress",
+		).length
+		const todo = tasks.filter((task) => task.executionStatus === "todo").length
 
 		return { total: tasks.length, completed, inProgress, todo }
 	}
@@ -44,12 +52,14 @@ export default function ProjectsPage() {
 				</div>
 
 				<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{projects.map((project) => {
-						const stats = getProjectStats(project.id)
+					{projects.map(async (project) => {
+						const stats = await getProjectStats(project.id)
 						const completionRate =
 							stats.total > 0
 								? Math.round((stats.completed / stats.total) * 100)
 								: 0
+
+						const members = await getProjectMembers(project.id)
 
 						return (
 							<Card
@@ -124,13 +134,13 @@ export default function ProjectsPage() {
 												</span>
 											</div>
 											<div className="flex -space-x-2">
-												{project.members.slice(0, 3).map((member) => (
+												{members.slice(0, 3).map((member) => (
 													<Avatar
 														key={member.id}
 														className="h-8 w-8 border-2 border-card"
 													>
 														<AvatarImage
-															src={member.avatar || "/placeholder.svg"}
+															src={member.image || "/placeholder.svg"}
 															alt={member.name}
 														/>
 														<AvatarFallback className="text-xs bg-muted text-muted-foreground">
@@ -141,10 +151,10 @@ export default function ProjectsPage() {
 														</AvatarFallback>
 													</Avatar>
 												))}
-												{project.members.length > 3 && (
+												{members.length > 3 && (
 													<div className="h-8 w-8 rounded-full bg-muted border-2 border-card flex items-center justify-center">
 														<span className="text-xs text-muted-foreground">
-															+{project.members.length - 3}
+															+{members.length - 3}
 														</span>
 													</div>
 												)}

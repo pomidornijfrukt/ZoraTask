@@ -1,23 +1,23 @@
 "use client"
 
-import { AlertTriangle, Calendar, Clock, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import type React from "react"
-import type ComponentProps from "react"
+import type { ComponentProps } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useDragAndDrop } from "@/hooks/use-drag-and-drop"
-import type { Project, Task } from "@/lib/data"
-import { getMemberById } from "@/lib/data"
+import type { Project, Task, TaskMetadata } from "@/lib/types"
 
 interface KanbanBoardProps {
 	project: Project
 	tasks: Task[]
+	metadata: TaskMetadata
 }
 
 interface Column {
-	id: Task["status"]
+	id: Task["categoryId"]
 	title: string
 	color: string
 }
@@ -31,6 +31,7 @@ const columns: Column[] = [
 export function KanbanBoard({
 	project,
 	tasks: initialTasks,
+	metadata,
 }: KanbanBoardProps) {
 	const { tasks, handleDragStart, handleDragOver, handleDrop } =
 		useDragAndDrop(initialTasks)
@@ -38,7 +39,9 @@ export function KanbanBoard({
 	return (
 		<div className="flex gap-6 overflow-x-auto pb-4">
 			{columns.map((column) => {
-				const columnTasks = tasks.filter((task) => task.status === column.id)
+				const columnTasks = tasks.filter(
+					(task) => task.categoryId === column.id,
+				)
 
 				return (
 					<Column
@@ -54,6 +57,7 @@ export function KanbanBoard({
 									key={task.id}
 									task={task}
 									project={project}
+									metadata={metadata}
 									handleDragStart={handleDragStart}
 								/>
 							)
@@ -76,7 +80,7 @@ function Column({
 	column: Column
 	tasks: Task[]
 	handleDragOver: (e: React.DragEvent) => void
-	handleDrop: (e: React.DragEvent, status: Task["status"]) => void
+	handleDrop: (e: React.DragEvent, status: Task["categoryId"]) => void
 } & ComponentProps<"div">) {
 	return (
 		<Card
@@ -114,44 +118,16 @@ function Column({
 	)
 }
 
-function TaskCard({
+async function TaskCard({
 	task,
-	project,
 	handleDragStart,
+	metadata,
 }: {
 	task: Task
 	project: Project
+	metadata: TaskMetadata
 	handleDragStart: (e: React.DragEvent, task: Task) => void
 }) {
-	const assignee = getMemberById(task.assigneeId, project)
-	const overdue = new Date(task.dueDate) < new Date()
-
-	const getPriorityColor = (priority: string) => {
-		switch (priority) {
-			case "high":
-				return "bg-red-500/10 text-red-500 border-red-500/20"
-			case "medium":
-				return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
-			case "low":
-				return "bg-green-500/10 text-green-500 border-green-500/20"
-			default:
-				return "bg-muted text-muted-foreground"
-		}
-	}
-
-	const getPriorityIcon = (priority: string) => {
-		switch (priority) {
-			case "high":
-				return <AlertTriangle className="h-3 w-3" />
-			case "medium":
-				return <Clock className="h-3 w-3" />
-			case "low":
-				return <Clock className="h-3 w-3" />
-			default:
-				return null
-		}
-	}
-
 	return (
 		<Card
 			key={task.id}
@@ -164,52 +140,34 @@ function TaskCard({
 					{/* Task Header */}
 					<div className="flex items-start justify-between gap-2">
 						<h4 className="font-medium text-foreground text-sm leading-tight">
-							{task.title}
+							{task.name}
 						</h4>
-						<Badge
-							className={`flex items-center gap-1 ${getPriorityColor(task.priority)}`}
-							variant="outline"
-						>
-							{getPriorityIcon(task.priority)}
-							{task.priority}
-						</Badge>
+						{metadata.priority.name}
 					</div>
 
 					{/* Task Description */}
 					<p className="text-sm text-muted-foreground line-clamp-2">
-						{task.description}
+						{metadata.description.body}
 					</p>
 
 					{/* Task Footer */}
 					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							<Calendar className="h-3 w-3 text-muted-foreground" />
-							<span
-								className={`text-xs ${overdue ? "text-red-500 font-medium" : "text-muted-foreground"}`}
-							>
-								{new Date(task.dueDate).toLocaleDateString()}
-							</span>
-							{overdue && (
-								<Badge variant="destructive" className="text-xs px-1 py-0">
-									Overdue
-								</Badge>
-							)}
-						</div>
-
-						{assignee && (
-							<Avatar className="h-6 w-6">
-								<AvatarImage
-									src={assignee.avatar || "/placeholder.svg"}
-									alt={assignee.name}
-								/>
-								<AvatarFallback className="text-xs bg-muted text-muted-foreground">
-									{assignee.name
-										.split(" ")
-										.map((n) => n[0])
-										.join("")}
-								</AvatarFallback>
-							</Avatar>
-						)}
+						{metadata.assignees.map((assignee) => {
+							return (
+								<Avatar key={assignee.id} className="h-6 w-6">
+									<AvatarImage
+										src={assignee.image ?? undefined}
+										alt={assignee.name}
+									/>
+									<AvatarFallback className="text-xs bg-muted text-muted-foreground">
+										{assignee.name
+											.split(" ")
+											.map((n) => n[0])
+											.join("")}
+									</AvatarFallback>
+								</Avatar>
+							)
+						})}
 					</div>
 				</div>
 			</CardContent>

@@ -3,7 +3,8 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { KanbanBoard } from "@/components/kanban-board"
 import { Button } from "@/components/ui/button"
-import { getProject, getTasksByProject } from "@/lib/data"
+import { getProject } from "@/lib/data/projects"
+import { getTaskMetadata, getTasksByProject } from "@/lib/data/task"
 
 interface BoardPageProps {
 	params: {
@@ -11,14 +12,15 @@ interface BoardPageProps {
 	}
 }
 
-export default function BoardPage({ params }: BoardPageProps) {
-	const project = getProject(params.id)
+export default async function BoardPage({ params }: BoardPageProps) {
+	const project = await getProject(params.id)
 
 	if (!project) {
 		notFound()
 	}
 
-	const tasks = getTasksByProject(params.id)
+	const tasks = await getTasksByProject(params.id)
+	const metadata = await getTaskMetadata(params.id)
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -56,7 +58,7 @@ export default function BoardPage({ params }: BoardPageProps) {
 					</div>
 				</div>
 
-				<KanbanBoard project={project} tasks={tasks} />
+				<KanbanBoard project={project} tasks={tasks} metadata={metadata} />
 			</div>
 		</div>
 	)

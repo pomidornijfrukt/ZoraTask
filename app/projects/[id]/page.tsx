@@ -1,10 +1,7 @@
 import {
-	AlertCircle,
 	ArrowLeft,
 	BarChart3,
 	Calendar,
-	CheckCircle,
-	Clock,
 	Kanban,
 	Settings,
 	Users,
@@ -22,67 +19,37 @@ import {
 	CardTitle,
 } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { getMemberById, getProject, getTasksByProject } from "@/lib/data"
+import { getProject, getProjectMembers } from "@/lib/data/projects"
+import {
+	getTaskAssignees,
+	getTaskDescription,
+	getTaskPriority,
+	getTasksByProject,
+} from "@/lib/data/task"
+import { getUser } from "@/lib/data/user"
 
-interface ProjectPageProps {
-	params: {
-		id: string
-	}
-}
-
-export default function ProjectPage({ params }: ProjectPageProps) {
-	const project = getProject(params.id)
+export default async function ProjectPage({
+	params,
+}: {
+	params: { id: string }
+}) {
+	const project = await getProject(params.id)
 
 	if (!project) {
 		notFound()
 	}
 
-	const tasks = getTasksByProject(params.id)
-	const todoTasks = tasks.filter((task) => task.status === "todo")
-	const inProgressTasks = tasks.filter((task) => task.status === "in-progress")
-	const doneTasks = tasks.filter((task) => task.status === "done")
+	const members = await getProjectMembers(params.id)
+
+	const tasks = await getTasksByProject(params.id)
+	const todoTasks = tasks.filter((task) => task.executionStatus === "todo")
+	const inProgressTasks = tasks.filter(
+		(task) => task.executionStatus === "in-progress",
+	)
+	const doneTasks = tasks.filter((task) => task.executionStatus === "done")
 
 	const completionRate =
 		tasks.length > 0 ? Math.round((doneTasks.length / tasks.length) * 100) : 0
-
-	const getStatusColor = (status: string) => {
-		switch (status) {
-			case "active":
-				return "bg-green-500/10 text-green-500 border-green-500/20"
-			case "planning":
-				return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
-			case "completed":
-				return "bg-blue-500/10 text-blue-500 border-blue-500/20"
-			default:
-				return "bg-muted text-muted-foreground"
-		}
-	}
-
-	const getStatusIcon = (status: string) => {
-		switch (status) {
-			case "active":
-				return <Clock className="h-3 w-3" />
-			case "planning":
-				return <AlertCircle className="h-3 w-3" />
-			case "completed":
-				return <CheckCircle className="h-3 w-3" />
-			default:
-				return null
-		}
-	}
-
-	const getPriorityColor = (priority: string) => {
-		switch (priority) {
-			case "high":
-				return "bg-red-500/10 text-red-500 border-red-500/20"
-			case "medium":
-				return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
-			case "low":
-				return "bg-green-500/10 text-green-500 border-green-500/20"
-			default:
-				return "bg-muted text-muted-foreground"
-		}
-	}
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -103,12 +70,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 							<h1 className="text-3xl font-bold text-foreground">
 								{project.name}
 							</h1>
-							<Badge
-								className={`flex items-center gap-1 ${getStatusColor(project.status)}`}
-							>
-								{getStatusIcon(project.status)}
-								{project.status}
-							</Badge>
 						</div>
 						<p className="text-muted-foreground mb-4">{project.description}</p>
 						<div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -118,7 +79,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 							</div>
 							<div className="flex items-center gap-1">
 								<Users className="h-4 w-4" />
-								{project.members.length} members
+								{members.length} members
 							</div>
 						</div>
 					</div>
@@ -199,8 +160,10 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 							</CardHeader>
 							<CardContent>
 								<div className="space-y-4">
-									{tasks.slice(0, 5).map((task) => {
-										const assignee = getMemberById(task.assigneeId, project)
+									{tasks.slice(0, 5).map(async (task) => {
+										const assignees = await getTaskAssignees(task.id)
+										const description = await getTaskDescription(task.id)
+										const priority = await getTaskPriority(task.id)
 										return (
 											<div
 												key={task.id}
@@ -208,49 +171,43 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 											>
 												<div className="flex-1">
 													<h4 className="font-medium text-card-foreground">
-														{task.title}
+														{task.name}
 													</h4>
 													<p className="text-sm text-muted-foreground">
-														{task.description}
+														{description.body}
 													</p>
 													<div className="flex items-center gap-2 mt-2">
-														<Badge
-															className={getPriorityColor(task.priority)}
-															variant="outline"
-														>
-															{task.priority}
-														</Badge>
-														<span className="text-xs text-muted-foreground">
-															Due {new Date(task.dueDate).toLocaleDateString()}
-														</span>
+														{priority.name}
 													</div>
 												</div>
 												<div className="flex items-center gap-2">
-													{assignee && (
-														<Avatar className="h-8 w-8">
-															<AvatarImage
-																src={assignee.avatar || "/placeholder.svg"}
-																alt={assignee.name}
-															/>
-															<AvatarFallback className="text-xs bg-muted text-muted-foreground">
-																{assignee.name
-																	.split(" ")
-																	.map((n) => n[0])
-																	.join("")}
-															</AvatarFallback>
-														</Avatar>
-													)}
+													{assignees.map((assignee) => {
+														return (
+															<Avatar key={assignee.id} className="h-8 w-8">
+																<AvatarImage
+																	src={assignee.image ?? undefined}
+																	alt={assignee.name}
+																/>
+																<AvatarFallback className="text-xs bg-muted text-muted-foreground">
+																	{assignee.name
+																		.split(" ")
+																		.map((n) => n[0])
+																		.join("")}
+																</AvatarFallback>
+															</Avatar>
+														)
+													})}
 													<Badge
 														variant="outline"
 														className={
-															task.status === "done"
+															task.executionStatus === "done"
 																? "bg-green-500/10 text-green-500 border-green-500/20"
-																: task.status === "in-progress"
+																: task.executionStatus === "in-progress"
 																	? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
 																	: "bg-muted text-muted-foreground"
 														}
 													>
-														{task.status}
+														{task.executionStatus}
 													</Badge>
 												</div>
 											</div>
@@ -273,11 +230,11 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 							</CardHeader>
 							<CardContent>
 								<div className="space-y-3">
-									{project.members.map((member) => (
+									{members.map((member) => (
 										<div key={member.id} className="flex items-center gap-3">
 											<Avatar className="h-10 w-10">
 												<AvatarImage
-													src={member.avatar || "/placeholder.svg"}
+													src={member.image ?? undefined}
 													alt={member.name}
 												/>
 												<AvatarFallback className="bg-muted text-muted-foreground">

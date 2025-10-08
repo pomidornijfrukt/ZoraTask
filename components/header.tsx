@@ -1,6 +1,6 @@
 "use client"
 
-import { UserButton } from "@daveyplate/better-auth-ui"
+import { UserAvatar, UserButton } from "@daveyplate/better-auth-ui"
 import { FolderOpen, Home, Kanban, type LucideIcon } from "lucide-react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname } from "next/navigation"
@@ -47,8 +47,14 @@ export function Header() {
 				<ThemeToggle />
 				{/* Auth buttons */}
 				{isSignedIn ? (
-					// TODO: fix userButton dropdown transform putting it out of bounds
-					<UserButton size="icon" />
+					<UserButton
+						size="icon"
+						trigger={
+							<button type="button">
+								<UserAvatar user={session?.user} />
+							</button>
+						}
+					/>
 				) : (
 					<Link
 						href="/auth/sign-in"

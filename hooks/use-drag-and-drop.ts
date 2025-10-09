@@ -1,9 +1,11 @@
-import { useState } from "react"
+import { useState, useTransition } from "react"
+import { updateTaskCategory } from "@/lib/actions/tasks"
 import type { Task } from "@/lib/types"
 
 export function useDragAndDrop(initialTasks: Task[]) {
 	const [tasks, setTasks] = useState<Task[]>(initialTasks)
 	const [draggedTask, setDraggedTask] = useState<Task | null>(null)
+	const [isPending, startTransition] = useTransition()
 
 	const handleDragStart = (e: React.DragEvent, task: Task) => {
 		setDraggedTask(task)
@@ -15,21 +17,33 @@ export function useDragAndDrop(initialTasks: Task[]) {
 		e.dataTransfer.dropEffect = "move"
 	}
 
-	const handleDrop = (e: React.DragEvent, newStatus: Task["categoryId"]) => {
+	const handleDrop = (
+		e: React.DragEvent,
+		newCategoryId: Task["categoryId"],
+	) => {
 		e.preventDefault()
 		if (!draggedTask) return
 
-		setTasks((prev) =>
-			prev.map((t) =>
-				t.id === draggedTask.id ? { ...t, status: newStatus } : t,
-			),
+		const updated = tasks.map((t) =>
+			t.id === draggedTask.id ? { ...t, categoryId: newCategoryId } : t,
 		)
+		setTasks(updated)
+
+		startTransition(async () => {
+			try {
+				await updateTaskCategory(draggedTask.id, newCategoryId!)
+			} catch (err) {
+				console.error("Failed to update category", err)
+				setTasks(tasks)
+			}
+		})
+
 		setDraggedTask(null)
 	}
 
 	return {
 		tasks,
-		setTasks,
+		isPending,
 		handleDragStart,
 		handleDragOver,
 		handleDrop,

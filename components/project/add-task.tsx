@@ -1,6 +1,7 @@
 "use client"
 
 import { Plus } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,60 +23,50 @@ import {
 	SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import type { Priority } from "@/lib/types"
+import type { Priority, Task } from "@/lib/types"
 
 interface AddTaskButtonProps {
 	projectId: string
-	categoryId?: string | null
+	categoryId: string
 	priorities: Priority[]
-	// createTask: (data: {
-	// 	name: string
-	// 	description: string
-	// 	categoryId: string
-	// 	priorityId: string
-	// 	projectId: string
-	// }) => Promise<{
-	// 	id: string
-	// 	name: string
-	// 	createdAt: Date
-	// 	updatedAt: Date
-	// 	parentId: string | null
-	// 	projectId: string
-	// 	descriptionId: string | null
-	// 	categoryId: string | null
-	// 	priorityId: string | null
-	// 	reporterId: string | null
-	// 	executionStatus: string | null
-	// }>
+	createTask: (data: {
+		name: string
+		description: string
+		categoryId: string
+		priorityId: string
+		projectId: string
+	}) => Promise<Task>
 }
 
 export function AddTaskButton({
-	// projectId,
-	// categoryId = null,
+	projectId,
+	categoryId,
 	priorities,
-	// createTask,
+	createTask,
 }: AddTaskButtonProps) {
+	const router = useRouter()
 	const [open, setOpen] = useState(false)
 
 	const handle = async (formData: FormData) => {
 		const name = formData.get("name") as string
-		// const description = formData.get("description") as string
-		// const priorityId = formData.get("priorityId") as string
+		const description = formData.get("description") as string
+		const priorityId = formData.get("priorityId") as string
 
 		if (!name) {
 			alert("Task name is required")
 			return
 		}
 
-		// await createTask({
-		// 	name,
-		// 	description,
-		// 	categoryId: categoryId ?? "",
-		// 	priorityId,
-		// 	projectId,
-		// })
+		await createTask({
+			name,
+			description,
+			categoryId,
+			priorityId,
+			projectId,
+		})
 
 		setOpen(false)
+		router.refresh()
 	}
 
 	return (

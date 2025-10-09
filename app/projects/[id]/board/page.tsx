@@ -1,23 +1,24 @@
 import { ArrowLeft, Settings } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { KanbanBoard } from "@/components/kanban-board"
+import { KanbanBoard } from "@/components/project/kanban-board"
 import { Button } from "@/components/ui/button"
 import { createCategory } from "@/lib/actions/categories"
 import {
 	getCategoriesByProject,
 	getPrioritiesByProject,
 	getProject,
+	getProjectMembers,
 } from "@/lib/data/projects"
-import { getTasksByProject } from "@/lib/data/task"
+import { getProjectTasksMetadata, getTasksByProject } from "@/lib/data/task"
 
-interface BoardPageProps {
+export default async function BoardPage({
+	params,
+}: {
 	params: {
 		id: string
 	}
-}
-
-export default async function BoardPage({ params }: BoardPageProps) {
+}) {
 	const project = await getProject(params.id)
 
 	if (!project) {
@@ -27,6 +28,8 @@ export default async function BoardPage({ params }: BoardPageProps) {
 	const tasks = await getTasksByProject(params.id)
 	const categories = await getCategoriesByProject(params.id)
 	const priorities = await getPrioritiesByProject(params.id)
+	const metadatas = await getProjectTasksMetadata(params.id)
+	const members = await getProjectMembers(params.id)
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -70,6 +73,8 @@ export default async function BoardPage({ params }: BoardPageProps) {
 					tasks={tasks}
 					categories={categories}
 					priorities={priorities}
+					metadatas={metadatas}
+					members={members}
 					createCategory={createCategory}
 				/>
 			</div>

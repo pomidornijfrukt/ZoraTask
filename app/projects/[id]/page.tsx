@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { getProject, getProjectMembers } from "@/lib/data/projects"
-import { getTaskMetadata, getTasksByProject } from "@/lib/data/task"
+import { getTaskMetadataById, getTasksByProject } from "@/lib/data/task"
 
 export default async function ProjectPage({
 	params,
@@ -160,7 +160,7 @@ export default async function ProjectPage({
 							<CardContent>
 								<div className="space-y-4">
 									{tasks.slice(0, 5).map(async (task) => {
-										const metadata = await getTaskMetadata(task.id)
+										const metadata = await getTaskMetadataById(task.id)
 										return (
 											<div
 												key={task.id}
@@ -176,7 +176,7 @@ export default async function ProjectPage({
 														</p>
 													)}
 													<div className="flex items-center gap-2 mt-2">
-														{metadata.priority.name}
+														{metadata.priority?.name}
 													</div>
 												</div>
 												<div className="flex items-center gap-2">

@@ -1,6 +1,10 @@
+"use client"
+
+import { MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { deleteCategory, updateCategory } from "@/lib/actions/categories"
+import { createTask } from "@/lib/actions/tasks"
 import type { Category, Priority } from "@/lib/types"
 import { Button } from "../ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
@@ -24,13 +28,13 @@ import { AddTaskButton } from "./add-task"
 interface ColumnContainerProps {
 	category: Category
 	handleDragOver: (e: React.DragEvent) => void
-	handleDrop: (e: React.DragEvent, status: string) => void
+	handleDrop: (e: React.DragEvent, newCategoryId: string) => void
 	children: React.ReactNode
 	projectId: string
 	priorities: Priority[]
 }
 
-export async function Column({
+export function Column({
 	category,
 	children,
 	handleDragOver,
@@ -69,7 +73,7 @@ export async function Column({
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild={true}>
 						<Button variant="ghost" size="sm">
-							⋯
+							<MoreHorizontal className="h-4 w-4" />
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
@@ -87,7 +91,7 @@ export async function Column({
 					projectId={projectId}
 					categoryId={category.id}
 					priorities={priorities}
-					// createTask={createTask}
+					createTask={createTask}
 				/>
 			</CardContent>
 

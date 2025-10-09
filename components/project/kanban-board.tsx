@@ -1,12 +1,17 @@
 "use client"
 
-import type React from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import type { User } from "better-auth"
 import { useDragAndDrop } from "@/hooks/use-drag-and-drop"
-import type { Category, Priority, Project, Task } from "@/lib/types"
-import { AddCategoryButton } from "./project/add-category"
-import { Column } from "./project/category-column"
-import { TaskCardContent } from "./project/task-card-content"
+import type {
+	Category,
+	Priority,
+	Project,
+	Task,
+	TaskMetadata,
+} from "@/lib/types"
+import { AddCategoryButton } from "./add-category"
+import { Column } from "./category-column"
+import { TaskCard } from "./task-card"
 
 interface KanbanBoardProps {
 	project: Project
@@ -14,6 +19,8 @@ interface KanbanBoardProps {
 	categories: Category[]
 	priorities: Priority[]
 	createCategory: (projectId: string, name: string) => Promise<Category>
+	metadatas: TaskMetadata[]
+	members: User[]
 }
 
 export function KanbanBoard({
@@ -22,6 +29,8 @@ export function KanbanBoard({
 	categories,
 	priorities,
 	createCategory,
+	metadatas,
+	members,
 }: KanbanBoardProps) {
 	const { tasks, handleDragStart, handleDragOver, handleDrop } =
 		useDragAndDrop(initialTasks)
@@ -41,11 +50,14 @@ export function KanbanBoard({
 						handleDragOver={handleDragOver}
 						handleDrop={handleDrop}
 					>
-						{columnTasks.map(async (task) => (
+						{columnTasks.map((task) => (
 							<TaskCard
 								key={task.id}
 								task={task}
 								handleDragStart={handleDragStart}
+								metadata={metadatas.find((m) => m.task.id === task.id)!}
+								priorities={priorities}
+								members={members}
 							/>
 						))}
 					</Column>
@@ -59,26 +71,5 @@ export function KanbanBoard({
 				/>
 			</div>
 		</div>
-	)
-}
-
-function TaskCard({
-	task,
-	handleDragStart,
-}: {
-	task: Task
-
-	handleDragStart: (e: React.DragEvent, task: Task) => void
-}) {
-	return (
-		<Card
-			className="bg-background border-border cursor-move hover:border-primary/50 transition-colors"
-			draggable
-			onDragStart={(e) => handleDragStart(e, task)}
-		>
-			<CardContent className="p-4">
-				<TaskCardContent task={task} />
-			</CardContent>
-		</Card>
 	)
 }

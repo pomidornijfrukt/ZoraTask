@@ -6,8 +6,7 @@ import { eq, and } from "drizzle-orm"
 import { nanoid } from "nanoid"
 import { sendInviteEmail } from "@/lib/email"
 import { hasPermission, PERMISSIONS } from "@/lib/permissions"
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
+import { authClient } from "@/lib/auth/auth-client"
 
 interface SendInviteInput {
   organizationId: string
@@ -18,11 +17,9 @@ interface SendInviteInput {
 export async function sendInvite(input: SendInviteInput) {
   try {
     // Get the current user session
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    })
+    const { data: session, isPending } = authClient.useSession()
 
-    if (!session?.user) {
+    if (!session?.user || isPending) {
       return { success: false, error: "Unauthorized" }
     }
 
@@ -121,11 +118,9 @@ export async function sendInvite(input: SendInviteInput) {
 export async function acceptInvite(inviteId: string) {
   try {
     // Get the current user session
-    const session = await auth.api.getSession({
-      headers: headers(),
-    })
+    const { data: session, isPending } = authClient.useSession()
 
-    if (!session?.user) {
+    if (!session?.user || isPending) {
       return { success: false, error: "Unauthorized" }
     }
 
@@ -229,11 +224,9 @@ export async function getInvite(inviteId: string) {
 
 export async function getOrganizationRoles(organizationId: string) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    })
+    const { data: session, isPending } = authClient.useSession()
 
-    if (!session?.user) {
+    if (!session?.user || isPending) {
       return { success: false, error: "Unauthorized" }
     }
 
@@ -255,11 +248,9 @@ export async function getOrganizationRoles(organizationId: string) {
 
 export async function getPendingInvites(organizationId: string) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    })
+    const { data: session, isPending } = authClient.useSession()
 
-    if (!session?.user) {
+    if (!session?.user || isPending) {
       return { success: false, error: "Unauthorized" }
     }
 

@@ -14,6 +14,13 @@ export function Providers({ children }: { children: ReactNode }) {
 			onSessionChange={() => {
 				router.refresh()
 			}}
+			account={{
+				viewPaths: {
+					SETTINGS: "/",
+				},
+				fields: ["name", "email"],
+			}}
+			deleteUser={true}
 			organization
 			credentials={false}
 			social={{ providers: ["github", "google"] }}

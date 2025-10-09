@@ -1,4 +1,4 @@
-import { char, integer, pgTable, text } from "drizzle-orm/pg-core"
+import { char, pgTable, text, timestamp } from "drizzle-orm/pg-core"
 import { organization, user } from "./auth-schema"
 
 export const userProfile = pgTable("userProfile", {
@@ -11,7 +11,7 @@ export const userProfile = pgTable("userProfile", {
 	phoneNumber: text("phoneNumber").unique(),
 	timeZone: text("timeZone"),
 	language: char({ length: 2 }),
-	age: integer(),
+	birthDate: timestamp("birth_date"),
 })
 
 export const roles = pgTable("roles", {

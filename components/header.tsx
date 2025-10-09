@@ -79,12 +79,9 @@ export function Header() {
 						}
 					/>
 				) : (
-					<Link
-						href="/auth/sign-in"
-						className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700"
-					>
-						Sign In
-					</Link>
+					<Button variant="outline" asChild>
+						<Link href="/auth/sign-in">Sign in</Link>
+					</Button>
 				)}
 			</div>
 		</header>

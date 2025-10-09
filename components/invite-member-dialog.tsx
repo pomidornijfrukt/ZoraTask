@@ -53,7 +53,8 @@ export function InviteMemberDialog({ organizationId }: InviteMemberDialogProps) 
 
       if (result.success) {
         setOpen(false)
-        // You might want to refresh the invites list here
+        // Refresh the page or invokes list
+        window.location.reload()
       } else {
         setError(result.error || 'Failed to send invitation')
       }

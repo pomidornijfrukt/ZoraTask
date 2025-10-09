@@ -33,7 +33,7 @@ export function AcceptInviteClient({ invite, inviteId }: AcceptInviteClientProps
 
       if (result.success) {
         // Redirect to organization page
-        router.push(`/organizations/${result.organizationId}`)
+        router.push(`/organization/${result.organizationSlug}`)
       } else {
         setError(result.error || "Failed to accept invitation")
       }

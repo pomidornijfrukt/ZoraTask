@@ -86,7 +86,7 @@ export async function sendInvite(input: SendInviteInput) {
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
 
-    const inviteUrl = `http://${baseUrl}/invites/${inviteId}`
+    const inviteUrl = `${baseUrl}/invites/${inviteId}`
     await sendInviteEmail({
       to: input.email,
       organizationName: org[0].name,
@@ -164,6 +164,7 @@ export async function acceptInvite(inviteId: string) {
       success: true,
       organizationId: inviteData.organizationId,
       organizationName: org[0]?.name,
+      organizationSlug: org[0]?.slug,
     }
   } catch (error) {
     console.error("Error accepting invite:", error)

@@ -13,6 +13,29 @@ RUN pnpm install --frozen-lockfile
 
 # Build stage
 FROM base AS builder
+
+# Accept build-time args so server-side code that validates envs can run during `next build`.
+# We prefer passing Postgres pieces and constructing DATABASE_URL here to avoid requiring
+# a literal DATABASE_URL in the caller's .env. Also accept OAuth keys for build-time.
+ARG POSTGRES_USER
+ARG POSTGRES_PASSWORD
+ARG POSTGRES_DB
+ARG BETTER_AUTH_SECRET
+ARG BETTER_AUTH_URL
+ARG GITHUB_CLIENT_ID
+ARG GITHUB_CLIENT_SECRET
+ARG GOOGLE_CLIENT_ID
+ARG GOOGLE_CLIENT_SECRET
+
+# Construct DATABASE_URL from the Postgres pieces so server-side build-time code can read it.
+ENV DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+ENV BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+ENV BETTER_AUTH_URL=${BETTER_AUTH_URL}
+ENV GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+ENV GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+ENV GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+ENV GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN pnpm build

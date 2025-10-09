@@ -11,10 +11,10 @@ export function Providers({ children }: { children: ReactNode }) {
 			authClient={authClient}
 			navigate={router.push}
 			replace={router.replace}
-			additionalFields={{}}
 			onSessionChange={() => {
 				router.refresh()
 			}}
+			additionalFields={{}}
 			deleteUser={true}
 			organization
 			credentials={false}

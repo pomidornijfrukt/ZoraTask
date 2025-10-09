@@ -3,6 +3,7 @@ import type React from "react"
 import { Suspense } from "react"
 import "@/styles/globals.css"
 import { Header } from "@/components/header"
+import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Providers } from "./providers"
 
@@ -24,6 +25,7 @@ export default function RootLayout({
 							<Header />
 							{children}
 							<Analytics />
+							<Toaster />
 						</Suspense>
 					</Providers>
 				</ThemeProvider>

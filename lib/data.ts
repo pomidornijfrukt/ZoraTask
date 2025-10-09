@@ -1,5 +1,6 @@
 import projectsData from "@/data/projects.json" with { type: "json" }
 import tasksData from "@/data/tasks.json" with { type: "json" }
+import organizationData from "@/data/organizations.json" with { type: "json" }
 
 export interface Project {
 	id: string
@@ -30,12 +31,29 @@ export interface Task {
 	dueDate: string
 }
 
+export interface Organization {
+	id: string
+	name: string
+	slug: string
+	logo: string
+	created_at: string
+	metadata: string
+}
+
 export const getProjects = (): Project[] => {
 	return projectsData.projects
 }
 
 export const getProject = (id: string): Project | undefined => {
 	return projectsData.projects.find((project) => project.id === id)
+}
+
+export const getOrganizations = (): Organization[] => {
+	return organizationData.organizations
+}
+
+export const getOrganization = (id: string): Organization | undefined => {
+	return organizationData.organizations.find((organization) => organization.id === id)
 }
 
 export const getTasks = (): Task[] => {

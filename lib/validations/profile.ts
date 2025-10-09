@@ -9,14 +9,14 @@ export const updateProfileSchema = z.object({
 		.regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number")
 		.optional()
 		.nullable()
-		.or(z.literal("")),
+		.transform((val) => val === "" ? null : val),
 	timeZone: z.string().max(100).optional().nullable(),
 	language: z
 		.string()
 		.length(2, "Language must be a 2-letter code")
 		.optional()
 		.nullable()
-		.or(z.literal("")),
+		.transform((val) => val === "" ? null : val),
 	birthDate: z.coerce.date().optional().nullable(),
 })
 

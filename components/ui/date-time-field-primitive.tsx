@@ -13,6 +13,15 @@ export type DateTimeFieldContextProps = {
 const DateTimeFieldContext = React.createContext<DateTimeFieldContextProps>({
 	getInputProps: () => ({ ref: () => null }),
 	getRootProps: () => ({ ref: () => null }),
+	ampm: {
+		value: "am",
+		set: () => {},
+		toggle: () => {},
+		getSelectProps: () => ({
+			value: "am",
+			onChange: () => {},
+		}),
+	},
 	options: {},
 	disabled: false,
 })
@@ -61,7 +70,9 @@ export function DateTimeField({
 	})
 
 	const { ref: rootRef, ...rootProps } = timescape.getRootProps()
-	const composedRefs = useComposedRefs(ref, (node) => rootRef(node)!)
+	const composedRefs = useComposedRefs(ref, (node) => {
+		rootRef(node)
+	})
 
 	return (
 		<DateTimeFieldContext.Provider value={{ ...timescape, disabled }}>

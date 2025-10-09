@@ -8,6 +8,13 @@
       "when": 1759902923408,
       "tag": "0000_spooky_mystique",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1759994344463,
+      "tag": "0001_cool_johnny_blaze",
+      "breakpoints": true
     }
   ]
 }

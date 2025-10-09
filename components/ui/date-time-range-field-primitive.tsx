@@ -77,7 +77,9 @@ export function DateTimeRangeField({
 	})
 
 	const { ref: rootRef, ...rootProps } = timescape.getRootProps()
-	const composedRefs = useComposedRefs(ref, (node) => rootRef(node)!)
+	const composedRefs = useComposedRefs(ref, (node) => {
+		rootRef(node)
+	})
 
 	return (
 		<DateTimeRangeFieldContext.Provider value={{ ...timescape, disabled }}>

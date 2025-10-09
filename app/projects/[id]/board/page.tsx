@@ -9,6 +9,7 @@ import {
 	getProject,
 } from "@/lib/data/projects"
 import { getTasksByProject } from "@/lib/data/task"
+import { createCategory } from "@/lib/actions/categories"
 
 interface BoardPageProps {
 	params: {
@@ -69,6 +70,7 @@ export default async function BoardPage({ params }: BoardPageProps) {
 					tasks={tasks}
 					categories={categories}
 					priorities={priorities}
+					createCategory={createCategory}
 				/>
 			</div>
 		</div>

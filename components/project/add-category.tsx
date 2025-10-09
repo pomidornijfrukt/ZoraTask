@@ -13,24 +13,27 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { useRouter } from "next/navigation"
+import { Category } from "@/lib/types"
 
 export function AddCategoryButton({
 	projectId,
-	// createCategory,
+	createCategory,
 }: {
 	projectId: string
-	// createCategory: (
-	// 	projectId: string,
-	// 	name: string,
-	// ) => Promise<{ id: string; projectId: string; name: string }>
+	createCategory: (
+		projectId: string,
+		name: string,
+	) => Promise<Category>
 }) {
+	const router = useRouter()
 	const [open, setOpen] = useState(false)
 	const [name, setName] = useState("")
 
-	// wrap the category action
 	const handle = async (formData: FormData) => {
-		const _name = formData.get("name") as string
-		// await createCategory(projectId, name)
+		const name = formData.get("name") as string
+		await createCategory(projectId, name)
+		router.refresh();
 	}
 
 	return (

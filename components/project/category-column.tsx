@@ -19,6 +19,7 @@ import {
 } from "../ui/dropdown-menu"
 import { Input } from "../ui/input"
 import { AddTaskButton } from "./add-task"
+import { deleteCategory, updateCategory } from "@/lib/actions/categories"
 
 interface ColumnContainerProps {
 	category: Category
@@ -43,13 +44,13 @@ export async function Column({
 	async function handleRename(formData: FormData) {
 		const name = formData.get("name") as string
 		if (!name || !name.trim()) throw new Error("Name is required")
-		// await updateCategory(category.id, name.trim())
+		await updateCategory(category.id, name.trim())
 		setIsEditOpen(false)
 		router.refresh()
 	}
 
 	async function handleDelete() {
-		// await deleteCategory(category.id)
+		await deleteCategory(category.id)
 		router.refresh()
 	}
 

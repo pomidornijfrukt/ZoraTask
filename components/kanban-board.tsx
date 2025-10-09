@@ -13,7 +13,7 @@ interface KanbanBoardProps {
 	tasks: Task[]
 	categories: Category[]
 	priorities: Priority[]
-	// createCategory: (projectId: string, name: string) => Promise<{ id: string; projectId: string; name: string; }>
+	createCategory: (projectId: string, name: string) => Promise<Category>
 }
 
 export function KanbanBoard({
@@ -21,7 +21,7 @@ export function KanbanBoard({
 	tasks: initialTasks,
 	categories,
 	priorities,
-	// createCategory,
+	createCategory,
 }: KanbanBoardProps) {
 	const { tasks, handleDragStart, handleDragOver, handleDrop } =
 		useDragAndDrop(initialTasks)
@@ -53,7 +53,7 @@ export function KanbanBoard({
 			})}
 
 			<div className="flex-shrink-0 w-80">
-				<AddCategoryButton projectId={project.id} />
+				<AddCategoryButton projectId={project.id} createCategory={createCategory}/>
 			</div>
 		</div>
 	)

@@ -14,7 +14,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@/components/ui/dialog" // adjust path
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import {
 	Select,
@@ -24,12 +24,17 @@ import {
 	SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-// import { createProject } from "@/lib/actions/projects"
 
 export default function CreateProjectDialog({
 	organizations,
+	createProject,
 }: {
-	organizations: Organization[]
+	organizations: Organization[],
+	createProject: (payload: {
+	name: string
+	description: string
+	organizationId: string
+}) => Promise<{ id: string; name: string; description: string; organizationId: string; createdAt: Date; updatedAt: Date }>;
 }) {
 	const router = useRouter()
 	const [isOpen, setIsOpen] = useState(false)
@@ -46,11 +51,11 @@ export default function CreateProjectDialog({
 			throw new Error("Organization ID is required")
 		}
 
-		// await createProject({
-		// 	name: name.trim(),
-		// 	description: description.trim(),
-		// 	organizationId: organizationId.trim(),
-		// })
+		await createProject({
+			name: name.trim(),
+			description: description.trim(),
+			organizationId: organizationId.trim(),
+		})
 
 		setIsOpen(false)
 		router.refresh()

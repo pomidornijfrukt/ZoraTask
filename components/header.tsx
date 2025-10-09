@@ -22,6 +22,9 @@ export function Header() {
 	// Determine if the user is signed in
 	const isSignedIn = !isPending && session?.user
 
+	// Access active organization using Better Auth's useActiveOrganization hook
+	const { data: activeOrg } = authClient.useActiveOrganization()
+
 	return (
 		<header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b bg-card">
 			{/* Logo and Navigation */}
@@ -49,14 +52,17 @@ export function Header() {
 
 			<div className="flex items-center space-x-4">
 				{/* Organization switcher */}
-				<OrganizationSwitcher hidePersonal
+				<OrganizationSwitcher
+					hidePersonal
 					trigger={
 						<button
 							type="button"
 							className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
 						>
 							<OrganizationLogo className="h-8 w-8" />
-							<span className="hidden sm:inline-block">Organizations</span>
+							<span className="hidden sm:inline-block">
+								{isPending ? "Loading..." : activeOrg?.name || "Organizations"}
+							</span>
 						</button>
 					}
 				/>

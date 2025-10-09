@@ -19,7 +19,11 @@ export default async function ProjectsPage() {
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	})
-	const projects = await getProjects(session!.user.id)
+	if (!session?.user) throw new Error("Unauthorized")
+	const projects = await getProjects(session.user.id)
+	const organizations = await await auth.api.listOrganizations({
+		headers: await headers(),
+	})
 
 	const getProjectStats = async (projectId: string) => {
 		const tasks = await getTasksByProject(projectId)
@@ -46,7 +50,7 @@ export default async function ProjectsPage() {
 							Manage and track all your projects in one place
 						</p>
 					</div>
-					<CreateProjectDialog />
+					<CreateProjectDialog organizations={organizations} />
 				</div>
 
 				<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -204,7 +208,7 @@ export default async function ProjectsPage() {
 						<p className="text-muted-foreground mb-6">
 							Create your first project to get started with Zora.
 						</p>
-						<CreateProjectDialog />
+						<CreateProjectDialog organizations={organizations} />
 					</div>
 				)}
 			</div>

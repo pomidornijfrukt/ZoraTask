@@ -1,162 +1,132 @@
 "use client"
 
+import type { Organization } from "better-auth/plugins"
 import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
-import type React from "react"
-import { useState, useTransition } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { createProject } from "@/lib/actions/projects"
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog" // adjust path
+import { Input } from "@/components/ui/input"
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+// import { createProject } from "@/lib/actions/projects"
 
-export default function CreateProjectDialog() {
+export default function CreateProjectDialog({
+	organizations,
+}: {
+	organizations: Organization[]
+}) {
 	const router = useRouter()
-	const [open, setOpen] = useState(false)
-	const [isPending, startTransition] = useTransition()
+	const [isOpen, setIsOpen] = useState(false)
 
-	const [name, setName] = useState("")
-	const [description, setDescription] = useState("")
-	const [organizationId, setOrganizationId] = useState("")
-	const [error, setError] = useState<string | null>(null)
+	const handle = async (formData: FormData) => {
+		const name = formData.get("name") as string
+		const description = (formData.get("description") as string) || ""
+		const organizationId = formData.get("organizationId") as string
 
-	const close = () => setOpen(false)
-	const openDialog = () => {
-		setError(null)
-		setName("")
-		setDescription("")
-		setOrganizationId("")
-		setOpen(true)
-	}
-
-	async function handleSubmit(e: React.FormEvent) {
-		e.preventDefault()
-		setError(null)
-
-		// lightweight client validation
-		if (!name.trim()) {
-			setError("Project name is required")
-			return
+		if (!name || !name.trim()) {
+			throw new Error("Project name is required")
 		}
-		if (!organizationId.trim()) {
-			setError("organizationId is required")
-			return
+		if (!organizationId || !organizationId.trim()) {
+			throw new Error("Organization ID is required")
 		}
 
-		// call server action inside a transition so React can remain responsive
-		startTransition(async () => {
-			try {
-				await createProject({
-					name: name.trim(),
-					description: description.trim(),
-					organizationId: organizationId.trim(),
-				})
-				// refresh the current route so server components re-run and show the new project
-				router.refresh()
-				close()
-			} catch (err: any) {
-				console.error("createProject failed", err)
-				setError(err?.message ?? "Failed to create project")
-			}
-		})
-	}
+		// await createProject({
+		// 	name: name.trim(),
+		// 	description: description.trim(),
+		// 	organizationId: organizationId.trim(),
+		// })
 
+		setIsOpen(false)
+		router.refresh()
+	}
 	return (
-		<>
-			<Button className="flex items-center gap-2" onClick={openDialog}>
-				<span className="sr-only">Create project</span>
-				<Plus className="h-4 w-4 mr-2" />
-				New Project
-			</Button>
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
+			<DialogTrigger asChild>
+				<Button className="flex items-center gap-2">
+					<Plus className="h-4 w-4" />
+					New Project
+				</Button>
+			</DialogTrigger>
 
-			{open && (
-				<div
-					role="dialog"
-					aria-modal="true"
-					className="fixed inset-0 z-50 flex items-center justify-center p-4"
-				>
-					{/* backdrop */}
-					<div
-						className="absolute inset-0 bg-black/50"
-						onClick={close}
-						aria-hidden
-					/>
+			<DialogContent className="max-w-lg">
+				<DialogHeader>
+					<DialogTitle>Create project</DialogTitle>
+					<DialogDescription>
+						Fill in project details to get started.
+					</DialogDescription>
+				</DialogHeader>
+				<form action={handle} className="space-y-4">
+					<div>
+						<label
+							htmlFor="name"
+							className="block text-sm font-medium text-muted-foreground"
+						>
+							Name
+						</label>
+						<Input name="name" placeholder="Project name" required />
+					</div>
 
-					<Card className="relative z-10 w-full max-w-lg">
-						<CardHeader>
-							<CardTitle>Create project</CardTitle>
-						</CardHeader>
+					<div>
+						<label
+							htmlFor="description"
+							className="block text-sm font-medium text-muted-foreground"
+						>
+							Description
+						</label>
+						<Textarea
+							name="description"
+							placeholder="Short project description"
+							rows={3}
+						/>
+					</div>
 
-						<CardContent>
-							<form onSubmit={handleSubmit} className="space-y-4">
-								<div>
-									<label
-										htmlFor="name"
-										className="block text-sm font-medium text-muted-foreground"
-									>
-										Name
-									</label>
-									<input
-										value={name}
-										onChange={(e) => setName(e.target.value)}
-										required
-										className="mt-1 block w-full rounded-md border p-2"
-										placeholder="Project name"
-									/>
-								</div>
+					<div>
+						<label
+							htmlFor="organizationId"
+							className="block text-sm font-medium text-muted-foreground"
+						>
+							Organization
+						</label>
+						<Select name="organizationId" defaultValue="" required>
+							<SelectTrigger className="w-full">
+								<SelectValue placeholder="Select organization" />
+							</SelectTrigger>
+							<SelectContent>
+								{organizations.map((org) => (
+									<SelectItem key={org.id} value={org.id}>
+										{org.name}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
 
-								<div>
-									<label
-										htmlFor="description"
-										className="block text-sm font-medium text-muted-foreground"
-									>
-										Description
-									</label>
-									<textarea
-										value={description}
-										onChange={(e) => setDescription(e.target.value)}
-										className="mt-1 block w-full rounded-md border p-2"
-										placeholder="Short project description"
-										rows={3}
-									/>
-								</div>
-
-								<div>
-									<label
-										htmlFor="organization"
-										className="block text-sm font-medium text-muted-foreground"
-									>
-										Organization ID
-									</label>
-									<input
-										value={organizationId}
-										onChange={(e) => setOrganizationId(e.target.value)}
-										required
-										className="mt-1 block w-full rounded-md border p-2"
-										placeholder="organization id"
-									/>
-									<p className="text-xs text-muted-foreground mt-1">
-										Use the organization id you want this project to belong to.
-									</p>
-								</div>
-
-								{error && (
-									<div className="text-sm text-red-500" role="alert">
-										{error}
-									</div>
-								)}
-
-								<div className="flex items-center justify-end gap-2 pt-2">
-									<Button type="button" variant="outline" onClick={close}>
-										Cancel
-									</Button>
-									<Button type="submit" disabled={isPending}>
-										{isPending ? "Creating…" : "Create"}
-									</Button>
-								</div>
-							</form>
-						</CardContent>
-					</Card>
-				</div>
-			)}
-		</>
+					<DialogFooter>
+						<DialogClose asChild>
+							<Button variant="outline" type="button">
+								Cancel
+							</Button>
+						</DialogClose>
+						<Button type="submit">Create</Button>
+					</DialogFooter>
+				</form>
+			</DialogContent>
+		</Dialog>
 	)
 }

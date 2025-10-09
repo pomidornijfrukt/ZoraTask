@@ -1,10 +1,14 @@
-import { ArrowLeft, Plus, Settings } from "lucide-react"
+import { ArrowLeft, Settings } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { KanbanBoard } from "@/components/kanban-board"
 import { Button } from "@/components/ui/button"
-import { getProject } from "@/lib/data/projects"
-import { getTaskMetadata, getTasksByProject } from "@/lib/data/task"
+import {
+	getCategoriesByProject,
+	getPrioritiesByProject,
+	getProject,
+} from "@/lib/data/projects"
+import { getTasksByProject } from "@/lib/data/task"
 
 interface BoardPageProps {
 	params: {
@@ -20,7 +24,8 @@ export default async function BoardPage({ params }: BoardPageProps) {
 	}
 
 	const tasks = await getTasksByProject(params.id)
-	const metadata = await getTaskMetadata(params.id)
+	const categories = await getCategoriesByProject(params.id)
+	const priorities = await getPrioritiesByProject(params.id)
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -47,18 +52,24 @@ export default async function BoardPage({ params }: BoardPageProps) {
 						</div>
 					</div>
 					<div className="flex gap-2">
-						<Button variant="outline">
-							<Settings className="h-4 w-4 mr-2" />
-							Board Settings
-						</Button>
-						<Button>
-							<Plus className="h-4 w-4 mr-2" />
-							Add Task
+						<Button asChild variant="outline">
+							<Link
+								href={`/projects/${project.id}/settings`}
+								className="flex items-center gap-2"
+							>
+								<Settings className="h-4 w-4 mr-2" />
+								Project Settings
+							</Link>
 						</Button>
 					</div>
 				</div>
 
-				<KanbanBoard project={project} tasks={tasks} metadata={metadata} />
+				<KanbanBoard
+					project={project}
+					tasks={tasks}
+					categories={categories}
+					priorities={priorities}
+				/>
 			</div>
 		</div>
 	)

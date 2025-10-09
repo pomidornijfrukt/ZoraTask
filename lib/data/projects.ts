@@ -1,6 +1,12 @@
 import { eq } from "drizzle-orm"
 import { db } from "@/lib/db"
-import { projectMemberships, projects, user } from "@/lib/db/schemas"
+import {
+	categories,
+	priorities,
+	projectMemberships,
+	projects,
+	user,
+} from "@/lib/db/schemas"
 
 export async function getProject(projectId: string) {
 	const [project] = await db
@@ -30,4 +36,18 @@ export async function getProjectMembers(projectId: string) {
 		.where(eq(projectMemberships.projectId, projectId))
 
 	return members.map((m) => ({ ...m.user }))
+}
+
+export async function getCategoriesByProject(projectId: string) {
+	return await db
+		.select()
+		.from(categories)
+		.where(eq(categories.projectId, projectId))
+}
+
+export async function getPrioritiesByProject(projectId: string) {
+	return await db
+		.select()
+		.from(priorities)
+		.where(eq(priorities.projectId, projectId))
 }

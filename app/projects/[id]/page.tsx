@@ -20,12 +20,7 @@ import {
 } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { getProject, getProjectMembers } from "@/lib/data/projects"
-import {
-	getTaskAssignees,
-	getTaskDescription,
-	getTaskPriority,
-	getTasksByProject,
-} from "@/lib/data/task"
+import { getTaskMetadata, getTasksByProject } from "@/lib/data/task"
 
 export default async function ProjectPage({
 	params,
@@ -165,9 +160,7 @@ export default async function ProjectPage({
 							<CardContent>
 								<div className="space-y-4">
 									{tasks.slice(0, 5).map(async (task) => {
-										const assignees = await getTaskAssignees(task.id)
-										const description = await getTaskDescription(task.id)
-										const priority = await getTaskPriority(task.id)
+										const metadata = await getTaskMetadata(task.id)
 										return (
 											<div
 												key={task.id}
@@ -177,15 +170,17 @@ export default async function ProjectPage({
 													<h4 className="font-medium text-card-foreground">
 														{task.name}
 													</h4>
-													<p className="text-sm text-muted-foreground">
-														{description.body}
-													</p>
+													{metadata.description && (
+														<p className="text-sm text-muted-foreground">
+															{metadata.description.body}
+														</p>
+													)}
 													<div className="flex items-center gap-2 mt-2">
-														{priority.name}
+														{metadata.priority.name}
 													</div>
 												</div>
 												<div className="flex items-center gap-2">
-													{assignees.map((assignee) => {
+													{metadata.assignees.map((assignee) => {
 														return (
 															<Avatar key={assignee.id} className="h-8 w-8">
 																<AvatarImage

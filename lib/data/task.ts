@@ -46,7 +46,6 @@ export async function getTaskPriority(taskId: string) {
 		.from(priorities)
 		.innerJoin(tasks, eq(tasks.priorityId, priorities.id))
 		.where(eq(tasks.id, taskId))
-
 	const [taskPriority] = priority.map((p) => ({ ...p.priorities }))
 	return taskPriority
 }

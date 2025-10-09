@@ -1,13 +1,15 @@
 "use client"
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { sendInvite } from '@/app/actions/invites'
-import { Spinner } from '@/components/ui/spinner'
+import type React from "react"
+
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { sendInvite } from "@/app/actions/invites"
+import { Spinner } from "@/components/ui/spinner"
 
 interface InviteMemberDialogProps {
   organizationId: string
@@ -18,8 +20,8 @@ export function InviteMemberDialog({ organizationId, roles }: InviteMemberDialog
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    email: '',
-    roleId: '',
+    email: "",
+    roleId: "",
   })
   const [error, setError] = useState<string | null>(null)
 
@@ -40,10 +42,10 @@ export function InviteMemberDialog({ organizationId, roles }: InviteMemberDialog
         // Refresh the page or invites list
         window.location.reload()
       } else {
-        setError(result.error || 'Failed to send invitation')
+        setError(result.error || "Failed to send invitation")
       }
     } catch (err) {
-      setError('An unexpected error occurred')
+      setError("An unexpected error occurred")
     } finally {
       setLoading(false)
     }
@@ -58,7 +60,7 @@ export function InviteMemberDialog({ organizationId, roles }: InviteMemberDialog
         <DialogHeader>
           <DialogTitle>Invite Team Member</DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email Address</Label>

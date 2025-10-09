@@ -1,4 +1,3 @@
-// app/organizations/[slug]/invites/page.tsx
 import { InviteMemberDialog } from "@/components/invite-member-dialog"
 import { PendingInvitesList } from "@/components/pending-invites-list"
 import { db } from "@/lib/db"
@@ -60,21 +59,16 @@ export default async function OrganizationInvitesPage({ params }: PageProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Team Invitations</h1>
-          <p className="text-muted-foreground">
-            Manage pending invitations to {organizationName}
-          </p>
+          <p className="text-muted-foreground">Manage pending invitations to {organizationName}</p>
         </div>
-        <InviteMemberDialog 
-          organizationId={organizationId}
-          roles={orgRoles}
-        />
+        <InviteMemberDialog organizationId={organizationId} roles={orgRoles} />
       </div>
 
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Pending Invitations</h2>
-        <PendingInvitesList 
+        <PendingInvitesList
           organizationId={organizationId}
-          initialInvites={pendingInvites.map(invite => ({
+          initialInvites={pendingInvites.map((invite) => ({
             ...invite,
             roleId: invite.roleId ?? "",
             expiresAt: invite.expiresAt instanceof Date ? invite.expiresAt.toISOString() : String(invite.expiresAt),

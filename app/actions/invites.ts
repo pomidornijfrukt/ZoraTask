@@ -6,7 +6,8 @@ import { eq, and } from "drizzle-orm"
 import { nanoid } from "nanoid"
 import { sendInviteEmail } from "@/lib/email"
 import { hasPermission, PERMISSIONS } from "@/lib/permissions"
-import { authClient } from "@/lib/auth/auth-client"
+import { auth } from "@/lib/auth"
+import { headers } from "next/headers"
 
 interface SendInviteInput {
   organizationId: string
@@ -16,24 +17,15 @@ interface SendInviteInput {
 
 export async function sendInvite(input: SendInviteInput) {
   try {
-    // Get the current user session
-    const { data: session, isPending } = authClient.useSession()
+    const session = await auth.api.getSession({
+      headers: headers(),
+    })
 
-    if (!session?.user || isPending) {
+    if (!session?.user) {
       return { success: false, error: "Unauthorized" }
     }
 
     const currentUserId = session.user.id
-
-    // Check if user has permission to invite members
-    const canInvite = await hasPermission(currentUserId, input.organizationId, PERMISSIONS.INVITE_MEMBERS)
-
-    if (!canInvite) {
-      return {
-        success: false,
-        error: "You don't have permission to invite members",
-      }
-    }
 
     const role = await db
       .select()
@@ -45,7 +37,6 @@ export async function sendInvite(input: SendInviteInput) {
       return { success: false, error: "Invalid role" }
     }
 
-    // Check if user is already a member
     const existingMember = await db
       .select()
       .from(member)
@@ -57,7 +48,6 @@ export async function sendInvite(input: SendInviteInput) {
       return { success: false, error: "User is already a member" }
     }
 
-    // Check if there's already a pending invitation
     const existingInvite = await db
       .select()
       .from(invitation)
@@ -74,31 +64,28 @@ export async function sendInvite(input: SendInviteInput) {
       return { success: false, error: "Invitation already sent to this email" }
     }
 
-    // Get organization details
     const org = await db.select().from(organization).where(eq(organization.id, input.organizationId)).limit(1)
 
     if (!org.length) {
       return { success: false, error: "Organization not found" }
     }
 
-    // Create invitation
     const inviteId = nanoid()
     const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + 7) // Expires in 7 days
+    expiresAt.setDate(expiresAt.getDate() + 7)
 
     await db.insert(invitation).values({
       id: inviteId,
       organizationId: input.organizationId,
       email: input.email,
-      role: input.roleId, // Store roleId in the role field
+      role: input.roleId,
       status: "pending",
       expiresAt,
       inviterId: currentUserId,
     })
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
 
-    // Send invitation email
     const inviteUrl = `http://${baseUrl}/invites/${inviteId}`
     await sendInviteEmail({
       to: input.email,
@@ -117,17 +104,17 @@ export async function sendInvite(input: SendInviteInput) {
 
 export async function acceptInvite(inviteId: string) {
   try {
-    // Get the current user session
-    const { data: session, isPending } = authClient.useSession()
+    const session = await auth.api.getSession({
+      headers: headers(),
+    })
 
-    if (!session?.user || isPending) {
+    if (!session?.user) {
       return { success: false, error: "Unauthorized" }
     }
 
     const currentUserId = session.user.id
     const currentUserEmail = session.user.email
 
-    // Get the invitation
     const invite = await db.select().from(invitation).where(eq(invitation.id, inviteId)).limit(1)
 
     if (!invite.length) {
@@ -136,7 +123,6 @@ export async function acceptInvite(inviteId: string) {
 
     const inviteData = invite[0]
 
-    // Check if invitation is for the current user's email
     if (inviteData.email !== currentUserEmail) {
       return {
         success: false,
@@ -144,17 +130,14 @@ export async function acceptInvite(inviteId: string) {
       }
     }
 
-    // Check if invitation is still pending
     if (inviteData.status !== "pending") {
       return { success: false, error: "This invitation has already been used" }
     }
 
-    // Check if invitation has expired
     if (new Date() > inviteData.expiresAt) {
       return { success: false, error: "This invitation has expired" }
     }
 
-    // Check if user is already a member
     const existingMember = await db
       .select()
       .from(member)
@@ -165,7 +148,6 @@ export async function acceptInvite(inviteId: string) {
       return { success: false, error: "You are already a member" }
     }
 
-    // Add user to organization
     await db.insert(member).values({
       id: nanoid(),
       organizationId: inviteData.organizationId,
@@ -174,10 +156,8 @@ export async function acceptInvite(inviteId: string) {
       createdAt: new Date(),
     })
 
-    // Mark invitation as accepted
     await db.update(invitation).set({ status: "accepted" }).where(eq(invitation.id, inviteId))
 
-    // Get organization details
     const org = await db.select().from(organization).where(eq(organization.id, inviteData.organizationId)).limit(1)
 
     return {
@@ -224,13 +204,14 @@ export async function getInvite(inviteId: string) {
 
 export async function getOrganizationRoles(organizationId: string) {
   try {
-    const { data: session, isPending } = authClient.useSession()
+    const session = await auth.api.getSession({
+      headers: headers(),
+    })
 
-    if (!session?.user || isPending) {
+    if (!session?.user) {
       return { success: false, error: "Unauthorized" }
     }
 
-    // Get all roles for this organization
     const orgRoles = await db
       .select({
         id: roles.id,
@@ -248,13 +229,14 @@ export async function getOrganizationRoles(organizationId: string) {
 
 export async function getPendingInvites(organizationId: string) {
   try {
-    const { data: session, isPending } = authClient.useSession()
+    const session = await auth.api.getSession({
+      headers: headers(),
+    })
 
-    if (!session?.user || isPending) {
+    if (!session?.user) {
       return { success: false, error: "Unauthorized" }
     }
 
-    // Check if user has permission to view invites
     const canManage = await hasPermission(session.user.id, organizationId, PERMISSIONS.MANAGE_MEMBERS)
 
     if (!canManage) {

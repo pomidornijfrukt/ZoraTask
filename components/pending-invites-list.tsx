@@ -1,9 +1,8 @@
-// components/pending-invites-list.tsx
 "use client"
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface PendingInvitesListProps {
   organizationId: string
@@ -23,7 +22,7 @@ export function PendingInvitesList({ organizationId, initialInvites }: PendingIn
 
   const handleResend = async (inviteId: string) => {
     // Implement resend functionality here
-    console.log('Resend invite:', inviteId)
+    console.log("Resend invite:", inviteId)
   }
 
   if (invites.length === 0) {
@@ -61,7 +60,7 @@ export function PendingInvitesList({ organizationId, initialInvites }: PendingIn
           </CardHeader>
           <CardContent className="pt-0">
             <div className="text-sm text-muted-foreground">
-              Expires: {new Date(invite.expiresAt).toLocaleDateString()} at{' '}
+              Expires: {new Date(invite.expiresAt).toLocaleDateString()} at{" "}
               {new Date(invite.expiresAt).toLocaleTimeString()}
             </div>
           </CardContent>

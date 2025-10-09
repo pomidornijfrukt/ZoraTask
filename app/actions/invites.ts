@@ -99,8 +99,10 @@ export async function sendInvite(input: SendInviteInput) {
       inviterId: currentUserId,
     })
 
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
     // Send invitation email
-    const inviteUrl = `http://localhost/invites/${inviteId}`
+    const inviteUrl = `http://${baseUrl}/invites/${inviteId}`
     await sendInviteEmail({
       to: input.email,
       organizationName: org[0].name,
@@ -120,7 +122,7 @@ export async function acceptInvite(inviteId: string) {
   try {
     // Get the current user session
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: headers(),
     })
 
     if (!session?.user) {

@@ -1,95 +1,63 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { getPendingInvites } from "@/app/actions/invites"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Spinner } from "@/components/ui/spinner"
-
-interface PendingInvite {
-  id: string
-  email: string
-  role: string | null
-  status: string
-  expiresAt: Date
-  inviterName: string | null
-}
+import { useEffect, useState } from 'react'
+import { getPendingInvites } from '@/app/actions/invites'
+import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 
 interface PendingInvitesListProps {
   organizationId: string
 }
 
 export function PendingInvitesList({ organizationId }: PendingInvitesListProps) {
-  const [invites, setInvites] = useState<PendingInvite[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [invites, setInvites] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    async function loadInvites() {
-      setIsLoading(true)
-      const result = await getPendingInvites(organizationId)
-
-      if (result.success && result.invites) {
-        setInvites(result.invites)
-      } else {
-        setError(result.error || "Failed to load invitations")
-      }
-      setIsLoading(false)
-    }
-
     loadInvites()
   }, [organizationId])
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <Spinner className="h-6 w-6" />
-      </div>
-    )
+  const loadInvites = async () => {
+    try {
+      const result = await getPendingInvites(organizationId)
+      if (result.success) {
+        setInvites(result.invites || [])
+      } else {
+        setError(result.error || 'Failed to load invites')
+      }
+    } catch (err) {
+      setError('An unexpected error occurred')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  if (error) {
-    return (
-      <div className="rounded-lg border border-destructive bg-destructive/10 p-4 text-sm text-destructive">{error}</div>
-    )
-  }
-
-  if (invites.length === 0) {
-    return (
-      <div className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
-        No pending invitations
-      </div>
-    )
-  }
+  if (loading) return <Spinner />
+  if (error) return <div className="text-destructive">{error}</div>
 
   return (
-    <div className="rounded-lg border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Invited By</TableHead>
-            <TableHead>Expires</TableHead>
-            <TableHead>Status</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {invites.map((invite) => (
-            <TableRow key={invite.id}>
-              <TableCell className="font-medium">{invite.email}</TableCell>
-              <TableCell>
-                <Badge variant="secondary">{invite.role || "member"}</Badge>
-              </TableCell>
-              <TableCell>{invite.inviterName || "Unknown"}</TableCell>
-              <TableCell>{new Date(invite.expiresAt).toLocaleDateString()}</TableCell>
-              <TableCell>
-                <Badge variant="outline">{invite.status}</Badge>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="space-y-4">
+      {invites.length === 0 ? (
+        <p className="text-muted-foreground">No pending invitations</p>
+      ) : (
+        invites.map((invite) => (
+          <div key={invite.id} className="flex items-center justify-between p-4 border rounded-lg">
+            <div>
+              <p className="font-medium">{invite.email}</p>
+              <p className="text-sm text-muted-foreground">
+                Role: {invite.roleName} • Expires: {new Date(invite.expiresAt).toLocaleDateString()}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Invited by: {invite.inviterName}
+              </p>
+            </div>
+            <Button variant="outline" size="sm">
+              Resend
+            </Button>
+          </div>
+        ))
+      )}
     </div>
   )
 }

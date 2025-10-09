@@ -1,57 +1,29 @@
+// components/pending-invites-list.tsx
 "use client"
 
-import { useEffect, useState } from 'react'
-import { getPendingInvites } from '@/app/actions/invites'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface PendingInvitesListProps {
   organizationId: string
+  initialInvites: Array<{
+    id: string
+    email: string
+    roleId: string
+    roleName: string
+    status: string
+    expiresAt: string
+    inviterName: string
+  }>
 }
 
-export function PendingInvitesList({ organizationId }: PendingInvitesListProps) {
-  const [invites, setInvites] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+export function PendingInvitesList({ organizationId, initialInvites }: PendingInvitesListProps) {
+  const [invites, setInvites] = useState(initialInvites)
 
-  useEffect(() => {
-    loadInvites()
-  }, [organizationId])
-
-  const loadInvites = async () => {
-    try {
-      const result = await getPendingInvites(organizationId)
-      if (result.success) {
-        setInvites(result.invites || [])
-      } else {
-        setError(result.error || 'Failed to load invites')
-      }
-    } catch (err) {
-      setError('An unexpected error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex justify-center py-8">
-        <Spinner />
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center text-destructive">
-            {error}
-          </div>
-        </CardContent>
-      </Card>
-    )
+  const handleResend = async (inviteId: string) => {
+    // Implement resend functionality here
+    console.log('Resend invite:', inviteId)
   }
 
   if (invites.length === 0) {
@@ -78,7 +50,11 @@ export function PendingInvitesList({ organizationId }: PendingInvitesListProps) 
                   Invited by {invite.inviterName} • Role: {invite.roleName}
                 </CardDescription>
               </div>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => handleResend(invite.id)}
+              >
                 Resend
               </Button>
             </div>

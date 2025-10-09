@@ -42,9 +42,9 @@ export async function getProjectTasksMetadata(projectId: string) {
 			})
 		}
 
-		const md = map.get(t.id)!
+		const md = map.get(t.id)
 		// row.user can be undefined when there is no assignee for that row
-		if (row.user) {
+		if (row.user && md) {
 			// avoid duplicates (same user might appear twice if your join produced duplicates)
 			if (!md.assignees.some((u) => u.id === row.user?.id)) {
 				md.assignees.push({ ...row.user })

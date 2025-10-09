@@ -50,16 +50,20 @@ export function KanbanBoard({
 						handleDragOver={handleDragOver}
 						handleDrop={handleDrop}
 					>
-						{columnTasks.map((task) => (
-							<TaskCard
-								key={task.id}
-								task={task}
-								handleDragStart={handleDragStart}
-								metadata={metadatas.find((m) => m.task.id === task.id)!}
-								priorities={priorities}
-								members={members}
-							/>
-						))}
+						{columnTasks.map((task) => {
+							const metadata = metadatas.find((m) => m.task.id === task.id)
+							if (!metadata) return null
+							return (
+								<TaskCard
+									key={task.id}
+									task={task}
+									handleDragStart={handleDragStart}
+									metadata={metadata}
+									priorities={priorities}
+									members={members}
+								/>
+							)
+						})}
 					</Column>
 				)
 			})}

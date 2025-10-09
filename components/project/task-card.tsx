@@ -35,12 +35,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { deleteTask, updateTask } from "@/lib/actions/tasks"
 import type { Priority, Task, TaskMetadata } from "@/lib/types"
 
-interface Option {
-	id: string
-	name: string
-	[key: string]: any
-}
-
 interface TaskCardProps {
 	task: Task
 	metadata: TaskMetadata

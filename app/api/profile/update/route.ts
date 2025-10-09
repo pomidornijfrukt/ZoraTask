@@ -1,11 +1,11 @@
-import { auth } from "@/lib/auth"
-import { db } from "@/lib/db"
-import { userProfile } from "@/lib/db/schemas/user-schema"
-import { updateProfileSchema } from "@/lib/validations/profile"
 import { eq } from "drizzle-orm"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"
+import { auth } from "@/lib/auth"
+import { db } from "@/lib/db"
+import { userProfile } from "@/lib/db/schemas/user-schema"
+import { updateProfileSchema } from "@/lib/validations/profile"
 
 export async function POST(request: Request) {
 	try {
@@ -35,7 +35,9 @@ export async function POST(request: Request) {
 					phoneNumber: validatedData.phoneNumber || null,
 					timeZone: validatedData.timeZone || null,
 					language: validatedData.language || null,
-					birthDate: validatedData.birthDate ? new Date(validatedData.birthDate) : null,
+					birthDate: validatedData.birthDate
+						? new Date(validatedData.birthDate)
+						: null,
 				})
 				.where(eq(userProfile.id, session.user.id))
 		} else {

@@ -9,7 +9,7 @@ export const updateProfileSchema = z.object({
 		.max(32, "Phone number too long")
 		.optional()
 		.nullable()
-		.transform((val) => val === "" ? null : val),
+		.transform((val) => (val === "" ? null : val)),
 	timeZone: z.string().max(100).optional().nullable(),
 	language: z
 		.string()

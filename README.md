@@ -43,6 +43,38 @@ pnpm run migrate
 
 You can also use a quick one-liner `pnpm build && pnpm start` for production.
 
+## Docker Deployment
+
+To run ZoraTask in a production-ready containerized environment using Docker Compose:
+
+1. Ensure Docker and Docker Compose are installed on your system.
+
+2. Clone the repository and navigate to the project directory.
+
+3. (Optional) Create a `.env` file in the project root with your desired environment variables (Docker Compose will read from this file automatically). If omitted, default values will be used.
+
+4. Start the application stack:
+   ```bash
+   docker compose up --build -d
+   ```
+
+5. Once PostgreSQL is healthy, apply database migrations:
+   ```bash
+   docker compose exec app pnpm run migrate
+   ```
+
+6. Access the application at <http://localhost:3000>. PostgreSQL is exposed on `localhost:5432`.
+
+For production deployment on platforms like Dokploy or Coolify:
+- Upload the `docker-compose.yml` and `Dockerfile` to your platform.
+- Override the default environment variables via the platform's UI to set secure production values for `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` (note: `DATABASE_URL` is auto-constructed from the PostgreSQL variables).
+
+To stop and clean up:
+```bash
+docker compose down
+```
+Data persists in the `postgres_data` named volume between restarts.
+
 ## Environment
 
 Zora (almost) works out-of-the-box with committed `NODE_ENV` environment-specific (production/development/test) `.env.*` defaults. For `DATABASE_URL` default to work you are expected to have a pg database setup locally.

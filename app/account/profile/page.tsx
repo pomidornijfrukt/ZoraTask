@@ -1,7 +1,5 @@
 "use client"
 
-import { Loader2 } from "lucide-react"
-import { useEffect, useId, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,6 +18,9 @@ import {
 } from "@/components/ui/date-picker"
 import { Input } from "@/components/ui/input"
 import { authClient } from "@/lib/auth/auth-client"
+import { AccountSettingsCards } from "@daveyplate/better-auth-ui"
+import { Loader2 } from "lucide-react"
+import { useEffect, useId, useState } from "react"
 
 type ExtendedUser = {
 	image?: string | null
@@ -306,6 +307,7 @@ export default function AccountSettingsPage() {
 			</div>
 
 			<form onSubmit={handleSubmit} className="space-y-6">
+				<AccountSettingsCards />
 				<Card>
 					<CardHeader>
 						<CardTitle>Profile Picture</CardTitle>

@@ -1,50 +1,52 @@
-import { InviteMemberDialog } from "@/components/invite-member-dialog"
-import { PendingInvitesList } from "@/components/pending-invites-list"
-import { db } from "@/lib/db"
-import { organization } from "@/lib/db/schemas"
-import { eq } from "drizzle-orm"
-import { notFound } from "next/navigation"
+import { getInvite } from "@/app/actions/invites"
+import { AcceptInviteClient } from "./accept-invite-client"
 
 interface PageProps {
-  params: Promise<{ path: string }>
+  params: Promise<{ inviteId: string }>
 }
 
-export default async function OrganizationInvitesPage({ params }: PageProps) {
-  const { path } = await params
+export default async function InvitePage({ params }: PageProps) {
+  const { inviteId } = await params
+  const result = await getInvite(inviteId)
 
-  const org = await db
-    .select()
-    .from(organization)
-    .where(eq(organization.slug, path))
-    .limit(1)
-
-  if (!org.length) {
-    notFound()
+  if (!result.success || !result.invite) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+          <h1 className="text-2xl font-bold">Invitation Not Found</h1>
+          <p className="text-muted-foreground">This invitation link is invalid or has expired.</p>
+        </div>
+      </div>
+    )
   }
 
-  const organizationId = org[0].id
-  const organizationName = org[0].name
+  const { invite } = result
 
-  return (
-    <div className="container mx-auto max-w-4xl space-y-8 py-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Team Invitations</h1>
+  // Check if expired
+  if (new Date() > new Date(invite.expiresAt)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+          <h1 className="text-2xl font-bold">Invitation Expired</h1>
           <p className="text-muted-foreground">
-            Manage pending invitations to {organizationName}
+            This invitation has expired. Please contact the organization admin for a new invitation.
           </p>
         </div>
-        <InviteMemberDialog 
-          organizationId={organizationId}
-        />
       </div>
+    )
+  }
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Pending Invitations</h2>
-        <PendingInvitesList 
-          organizationId={organizationId} 
-        />
+  // Check if already accepted
+  if (invite.status !== "pending") {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+          <h1 className="text-2xl font-bold">Invitation Already Used</h1>
+          <p className="text-muted-foreground">This invitation has already been accepted.</p>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  return <AcceptInviteClient invite={invite} inviteId={inviteId} />
 }

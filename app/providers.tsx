@@ -14,6 +14,7 @@ export function Providers({ children }: { children: ReactNode }) {
 			onSessionChange={() => {
 				router.refresh()
 			}}
+			organization
 			credentials={false}
 			social={{ providers: ["github", "google"] }}
 		>

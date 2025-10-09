@@ -18,5 +18,8 @@ export const env = createEnv({
 		GITHUB_CLIENT_SECRET: z.string().default(""),
 		GOOGLE_CLIENT_ID: z.string().default(""),
 		GOOGLE_CLIENT_SECRET: z.string().default(""),
+
+		// email (via better-auth)
+		RESEND_API_KEY: z.string().default(""),
 	},
 })

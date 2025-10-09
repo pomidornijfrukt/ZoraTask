@@ -4,6 +4,7 @@ import { Suspense } from "react"
 import "@/styles/globals.css"
 import { Header } from "@/components/header"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 import { Providers } from "./providers"
 
 export default function RootLayout({
@@ -24,6 +25,7 @@ export default function RootLayout({
 							<Header />
 							{children}
 							<Analytics />
+							<Toaster />
 						</Suspense>
 					</Providers>
 				</ThemeProvider>

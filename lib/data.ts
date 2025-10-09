@@ -30,6 +30,15 @@ export interface Task {
 	dueDate: string
 }
 
+export interface Organization {
+	id: string
+	name: string
+	slug: string
+	logo: string
+	created_at: string
+	metadata: string
+}
+
 export const getProjects = (): Project[] => {
 	return projectsData.projects
 }

@@ -10,6 +10,13 @@ export const auth = betterAuth({
 		provider: "pg",
 		schema,
 	}),
+
+	user: {
+		deleteUser: {
+			enabled: true,
+		},
+	},
+
 	plugins: [organization(), admin(), openAPI()],
 	socialProviders: {
 		github: {

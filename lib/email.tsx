@@ -21,19 +21,12 @@ export async function sendInviteEmail({
 }: SendInviteEmailParams) {
   // If no Resend API key, log to console (useful for development)
   if (!resend) {
-    console.log("[v0] Email would be sent (no RESEND_API_KEY configured):", {
-      to,
-      inviteUrl,
-      organizationName,
-      inviterName,
-      roleName,
-    })
-    return { success: true }
+    return { success: false, error: "Resend API key not configured" }
   }
 
   try {
     await resend.emails.send({
-      from: "noreply@yourdomain.com", // Replace with your verified domain
+      from: "onboarding@resend.dev",
       to,
       subject: `You've been invited to join ${organizationName}`,
       html: `

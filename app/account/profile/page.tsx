@@ -179,15 +179,16 @@ export default function AccountSettingsPage() {
 
 				// Parse Zod validation errors from backend
 				if (errorData.details?.name === "ZodError") {
-					try {
-						const zodErrors = JSON.parse(errorData.details.message)
-						zodErrors.forEach((err: { path: string[]; message: string }) => {
+					// Prefer standard Zod error format: details.errors is an array
+					if (Array.isArray(errorData.details.errors)) {
+						errorData.details.errors.forEach((err: { path: string[]; message: string }) => {
 							if (err.path && err.path.length > 0) {
 								fieldErrors[err.path[0]] = err.message
 							}
 						})
-					} catch {
-						// If parsing fails, use the error message as-is
+					} else if (typeof errorData.details.message === "string") {
+						// If only a message is present, use it as a general error
+						fieldErrors["form"] = errorData.details.message
 					}
 				} else if (errorData.errors) {
 					// Handle other error formats

@@ -17,7 +17,7 @@ export const updateProfileSchema = z.object({
 		.optional()
 		.nullable()
 		.or(z.literal("")),
-	age: z.number().int().min(0).max(150).optional().nullable(),
+	birthDate: z.coerce.date().optional().nullable(),
 })
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>

@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 					phoneNumber: validatedData.phoneNumber || null,
 					timeZone: validatedData.timeZone || null,
 					language: validatedData.language || null,
-					age: validatedData.age || null,
+					birthDate: validatedData.birthDate || null,
 				})
 				.where(eq(userProfile.id, session.user.id))
 		} else {
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 				phoneNumber: validatedData.phoneNumber || null,
 				timeZone: validatedData.timeZone || null,
 				language: validatedData.language || null,
-				age: validatedData.age || null,
+				birthDate: validatedData.birthDate || null,
 			})
 		}
 
@@ -54,7 +54,13 @@ export async function POST(request: Request) {
 	} catch (error) {
 		if (error instanceof Error && error.name === "ZodError") {
 			return NextResponse.json(
-				{ error: "Invalid input", details: error },
+				{
+					error: "Invalid input",
+					details: {
+						name: error.name,
+						message: error.message,
+					},
+				},
 				{ status: 400 },
 			)
 		}

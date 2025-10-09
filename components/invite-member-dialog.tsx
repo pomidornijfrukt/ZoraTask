@@ -1,3 +1,4 @@
+// components/invite-member-dialog.tsx
 "use client"
 
 import { useState } from 'react'
@@ -6,38 +7,22 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { sendInvite, getOrganizationRoles } from '@/app/actions/invites'
+import { sendInvite } from '@/app/actions/invites'
 import { Spinner } from '@/components/ui/spinner'
 
 interface InviteMemberDialogProps {
   organizationId: string
+  roles: Array<{ id: string; name: string }>
 }
 
-export function InviteMemberDialog({ organizationId }: InviteMemberDialogProps) {
+export function InviteMemberDialog({ organizationId, roles }: InviteMemberDialogProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [roles, setRoles] = useState<Array<{ id: string; name: string }>>([])
   const [formData, setFormData] = useState({
     email: '',
     roleId: '',
   })
   const [error, setError] = useState<string | null>(null)
-
-  const loadRoles = async () => {
-    const result = await getOrganizationRoles(organizationId)
-    if (result.success) {
-      setRoles(result.roles || [])
-    }
-  }
-
-  const handleOpenChange = (isOpen: boolean) => {
-    setOpen(isOpen)
-    if (isOpen) {
-      loadRoles()
-      setError(null)
-      setFormData({ email: '', roleId: '' })
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,7 +38,7 @@ export function InviteMemberDialog({ organizationId }: InviteMemberDialogProps) 
 
       if (result.success) {
         setOpen(false)
-        // Refresh the page or invokes list
+        // Refresh the page or invites list
         window.location.reload()
       } else {
         setError(result.error || 'Failed to send invitation')
@@ -66,7 +51,7 @@ export function InviteMemberDialog({ organizationId }: InviteMemberDialogProps) 
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>Invite Member</Button>
       </DialogTrigger>

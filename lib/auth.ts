@@ -6,6 +6,12 @@ import { db } from "./db"
 import { env } from "./env"
 
 export const auth = betterAuth({
+	secret: env.BETTER_AUTH_SECRET,
+	session: {
+		cookieCache: {
+			enabled: true,
+		},
+	},
 	database: drizzleAdapter(db, {
 		provider: "pg",
 		schema,

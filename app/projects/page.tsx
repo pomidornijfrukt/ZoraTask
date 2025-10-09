@@ -1,6 +1,7 @@
 import { Calendar, Plus, Users } from "lucide-react"
 import { headers } from "next/headers"
 import Link from "next/link"
+import CreateProjectDialog from "@/components/project/create-project-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -45,10 +46,7 @@ export default async function ProjectsPage() {
 							Manage and track all your projects in one place
 						</p>
 					</div>
-					<Button className="flex items-center gap-2">
-						<Plus className="h-4 w-4" />
-						New Project
-					</Button>
+					<CreateProjectDialog />
 				</div>
 
 				<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -206,10 +204,7 @@ export default async function ProjectsPage() {
 						<p className="text-muted-foreground mb-6">
 							Create your first project to get started with Zora.
 						</p>
-						<Button>
-							<Plus className="h-4 w-4 mr-2" />
-							Create Project
-						</Button>
+						<CreateProjectDialog />
 					</div>
 				)}
 			</div>

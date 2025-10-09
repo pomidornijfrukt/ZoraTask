@@ -11,10 +11,15 @@ export async function getProject(projectId: string) {
 }
 
 export async function getProjects(userId: string) {
-	return db
+	const rows = await db
 		.select()
 		.from(projects)
+		.innerJoin(
+			projectMemberships,
+			eq(projectMemberships.projectId, projects.id),
+		)
 		.where(eq(projectMemberships.memberId, userId))
+	return rows.map((r) => ({ ...r.projects }))
 }
 
 export async function getProjectMembers(projectId: string) {

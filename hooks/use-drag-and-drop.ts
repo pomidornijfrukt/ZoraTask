@@ -1,5 +1,5 @@
 import { useState } from "react"
-import type { Task } from "@/lib/data"
+import type { Task } from "@/lib/types"
 
 export function useDragAndDrop(initialTasks: Task[]) {
 	const [tasks, setTasks] = useState<Task[]>(initialTasks)
@@ -15,7 +15,7 @@ export function useDragAndDrop(initialTasks: Task[]) {
 		e.dataTransfer.dropEffect = "move"
 	}
 
-	const handleDrop = (e: React.DragEvent, newStatus: Task["status"]) => {
+	const handleDrop = (e: React.DragEvent, newStatus: Task["categoryId"]) => {
 		e.preventDefault()
 		if (!draggedTask) return
 

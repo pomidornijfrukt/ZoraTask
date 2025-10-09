@@ -26,7 +26,6 @@ import {
 	getTaskPriority,
 	getTasksByProject,
 } from "@/lib/data/task"
-import { getUser } from "@/lib/data/user"
 
 export default async function ProjectPage({
 	params,
@@ -84,11 +83,16 @@ export default async function ProjectPage({
 						</div>
 					</div>
 					<div className="flex gap-2">
-						<Button variant="outline">
-							<Settings className="h-4 w-4 mr-2" />
-							Settings
+						<Button asChild variant="outline">
+							<Link
+								href={`/projects/${project.id}/settings`}
+								className="flex items-center gap-2"
+							>
+								<Settings className="h-4 w-4 mr-2" />
+								Settings
+							</Link>
 						</Button>
-						<Button asChild={true}>
+						<Button asChild>
 							<Link href={`/projects/${project.id}/board`}>
 								<Kanban className="h-4 w-4 mr-2" />
 								Open Board
@@ -267,11 +271,14 @@ export default async function ProjectPage({
 							</CardHeader>
 							<CardContent className="space-y-2">
 								<Button
+									asChild
 									variant="outline"
 									className="w-full justify-start bg-transparent"
 								>
-									<Kanban className="h-4 w-4 mr-2" />
-									View Kanban Board
+									<Link href={`/projects/${project.id}/board`}>
+										<Kanban className="h-4 w-4 mr-2" />
+										Open Board
+									</Link>
 								</Button>
 								<Button
 									variant="outline"
@@ -281,11 +288,17 @@ export default async function ProjectPage({
 									View Reports
 								</Button>
 								<Button
+									asChild
 									variant="outline"
 									className="w-full justify-start bg-transparent"
 								>
-									<Settings className="h-4 w-4 mr-2" />
-									Project Settings
+									<Link
+										href={`/projects/${project.id}/settings`}
+										className="flex items-center gap-2"
+									>
+										<Settings className="h-4 w-4 mr-2" />
+										Settings
+									</Link>
 								</Button>
 							</CardContent>
 						</Card>

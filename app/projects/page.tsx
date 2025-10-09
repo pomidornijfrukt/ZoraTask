@@ -11,10 +11,10 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card"
+import { createProject } from "@/lib/actions/projects"
 import { auth } from "@/lib/auth"
 import { getProjectMembers, getProjects } from "@/lib/data/projects"
 import { getTasksByProject } from "@/lib/data/task"
-import { createProject } from "@/lib/actions/projects"
 
 export default async function ProjectsPage() {
 	const session = await auth.api.getSession({
@@ -51,7 +51,10 @@ export default async function ProjectsPage() {
 							Manage and track all your projects in one place
 						</p>
 					</div>
-					<CreateProjectDialog organizations={organizations} createProject={createProject} />
+					<CreateProjectDialog
+						organizations={organizations}
+						createProject={createProject}
+					/>
 				</div>
 
 				<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -209,7 +212,10 @@ export default async function ProjectsPage() {
 						<p className="text-muted-foreground mb-6">
 							Create your first project to get started with Zora.
 						</p>
-						<CreateProjectDialog organizations={organizations} createProject={createProject}/>
+						<CreateProjectDialog
+							organizations={organizations}
+							createProject={createProject}
+						/>
 					</div>
 				)}
 			</div>

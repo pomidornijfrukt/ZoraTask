@@ -53,7 +53,10 @@ export function KanbanBoard({
 			})}
 
 			<div className="flex-shrink-0 w-80">
-				<AddCategoryButton projectId={project.id} createCategory={createCategory}/>
+				<AddCategoryButton
+					projectId={project.id}
+					createCategory={createCategory}
+				/>
 			</div>
 		</div>
 	)

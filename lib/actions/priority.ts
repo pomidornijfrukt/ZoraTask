@@ -1,49 +1,51 @@
-// "use server"
+"use server"
 
-// import { eq } from "drizzle-orm"
-// import { v7 } from "uuid"
-// import { db } from "../db"
-// import { priorities } from "../db/schemas"
-// import { checkIfOwner } from "./utils"
+import { eq } from "drizzle-orm"
+import { v7 } from "uuid"
+import { db } from "../db"
+import { priorities } from "../db/schemas"
+import { checkIfOwner } from "./utils"
 
-// export async function createPriority(projectId: string, name: string) {
-// 	checkIfOwner(projectId)
+export async function createPriority(projectId: string, name: string) {
+	checkIfOwner(projectId)
 
-// 	const id = v7()
-// 	await db.insert(priorities).values({ id, projectId, name })
-// 	return { id, projectId, name }
-// }
+	const id = v7()
+	await db.insert(priorities).values({ id, projectId, name })
+	return { id, projectId, name }
+}
 
-// export async function updatePriority(priorityId: string, name: string) {
-// 	const [existing] = await db
-// 		.select()
-// 		.from(priorities)
-// 		.where(eq(priorities.id, priorityId))
-// 		.limit(1)
+export async function updatePriority(priorityId: string, name: string) {
+	const [existing] = await db
+		.select()
+		.from(priorities)
+		.where(eq(priorities.id, priorityId))
+		.limit(1)
 
-// 	if (!existing) throw new Error("Priority not found")
-// 	checkIfOwner(existing.projectId)
+	if (!existing) throw new Error("Priority not found")
+	if (existing.name === name) return existing
 
-// 	const [updated] = await db
-// 		.update(priorities)
-// 		.set({ name })
-// 		.where(eq(priorities.id, priorityId))
-// 		.returning()
+	checkIfOwner(existing.projectId)
 
-// 	return updated
-// }
+	const [updated] = await db
+		.update(priorities)
+		.set({ name })
+		.where(eq(priorities.id, priorityId))
+		.returning()
 
-// export async function deletePriority(priorityId: string) {
-// 	const [existing] = await db
-// 		.select()
-// 		.from(priorities)
-// 		.where(eq(priorities.id, priorityId))
-// 		.limit(1)
+	return updated
+}
 
-// 	if (!existing) throw new Error("Priority not found")
-// 	checkIfOwner(existing.projectId)
+export async function deletePriority(priorityId: string) {
+	const [existing] = await db
+		.select()
+		.from(priorities)
+		.where(eq(priorities.id, priorityId))
+		.limit(1)
 
-// 	await db.delete(priorities).where(eq(priorities.id, priorityId))
+	if (!existing) throw new Error("Priority not found")
+	checkIfOwner(existing.projectId)
 
-// 	return { ok: true }
-// }
+	await db.delete(priorities).where(eq(priorities.id, priorityId))
+
+	return { ok: true }
+}

@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { deleteCategory, updateCategory } from "@/lib/actions/categories"
 import type { Category, Priority } from "@/lib/types"
 import { Button } from "../ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
@@ -19,7 +20,6 @@ import {
 } from "../ui/dropdown-menu"
 import { Input } from "../ui/input"
 import { AddTaskButton } from "./add-task"
-import { deleteCategory, updateCategory } from "@/lib/actions/categories"
 
 interface ColumnContainerProps {
 	category: Category

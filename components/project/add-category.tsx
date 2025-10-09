@@ -1,6 +1,7 @@
 "use client"
 
 import { Plus } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,18 +14,14 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { useRouter } from "next/navigation"
-import { Category } from "@/lib/types"
+import type { Category } from "@/lib/types"
 
 export function AddCategoryButton({
 	projectId,
 	createCategory,
 }: {
 	projectId: string
-	createCategory: (
-		projectId: string,
-		name: string,
-	) => Promise<Category>
+	createCategory: (projectId: string, name: string) => Promise<Category>
 }) {
 	const router = useRouter()
 	const [open, setOpen] = useState(false)
@@ -33,7 +30,7 @@ export function AddCategoryButton({
 	const handle = async (formData: FormData) => {
 		const name = formData.get("name") as string
 		await createCategory(projectId, name)
-		router.refresh();
+		router.refresh()
 	}
 
 	return (

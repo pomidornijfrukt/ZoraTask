@@ -3,13 +3,13 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { KanbanBoard } from "@/components/kanban-board"
 import { Button } from "@/components/ui/button"
+import { createCategory } from "@/lib/actions/categories"
 import {
 	getCategoriesByProject,
 	getPrioritiesByProject,
 	getProject,
 } from "@/lib/data/projects"
 import { getTasksByProject } from "@/lib/data/task"
-import { createCategory } from "@/lib/actions/categories"
 
 interface BoardPageProps {
 	params: {

@@ -50,8 +50,8 @@ interface AddTaskButtonProps {
 }
 
 export function AddTaskButton({
-	projectId,
-	categoryId = null,
+	// projectId,
+	// categoryId = null,
 	priorities,
 	// createTask,
 }: AddTaskButtonProps) {
@@ -59,8 +59,8 @@ export function AddTaskButton({
 
 	const handle = async (formData: FormData) => {
 		const name = formData.get("name") as string
-		const _description = formData.get("description") as string
-		const _priorityId = formData.get("priorityId") as string
+		// const description = formData.get("description") as string
+		// const priorityId = formData.get("priorityId") as string
 
 		if (!name) {
 			alert("Task name is required")

@@ -24,17 +24,18 @@ import {
 	SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import type { Project } from "@/lib/types"
 
 export default function CreateProjectDialog({
 	organizations,
 	createProject,
 }: {
-	organizations: Organization[],
+	organizations: Organization[]
 	createProject: (payload: {
-	name: string
-	description: string
-	organizationId: string
-}) => Promise<{ id: string; name: string; description: string; organizationId: string; createdAt: Date; updatedAt: Date }>;
+		name: string
+		description: string
+		organizationId: string
+	}) => Promise<Project>
 }) {
 	const router = useRouter()
 	const [isOpen, setIsOpen] = useState(false)

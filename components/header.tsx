@@ -1,10 +1,10 @@
 "use client"
 
-import { UserAvatar, UserButton } from "@daveyplate/better-auth-ui"
+import { OrganizationLogo, OrganizationSwitcher, UserAvatar, UserButton } from "@daveyplate/better-auth-ui"
 import { FolderOpen, Home, Kanban, type LucideIcon } from "lucide-react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { authClient } from "@/lib/auth/auth-client"
 import { ThemeToggle } from "./theme-toggle"
 
@@ -43,6 +43,19 @@ export function Header() {
 			</div>
 
 			<div className="flex items-center space-x-4">
+				{/* Organization Switcher */}
+				<OrganizationSwitcher
+					hidePersonal
+					trigger={
+						<button
+							type="button"
+							className={buttonVariants({ variant: "outline", size: "default" })}
+						>
+							<OrganizationLogo className="size-8" />
+							<span>Organizations</span>
+						</button>
+					}
+				/>
 				{/* Theme Picker */}
 				<ThemeToggle />
 				{/* Auth buttons */}

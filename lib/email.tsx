@@ -5,31 +5,31 @@ import { env } from "./env"
 const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null
 
 interface SendInviteEmailParams {
-  to: string
-  inviteUrl: string
-  organizationName: string
-  inviterName: string
-  roleName: string
+	to: string
+	inviteUrl: string
+	organizationName: string
+	inviterName: string
+	roleName: string
 }
 
 export async function sendInviteEmail({
-  to,
-  inviteUrl,
-  organizationName,
-  inviterName,
-  roleName,
+	to,
+	inviteUrl,
+	organizationName,
+	inviterName,
+	roleName,
 }: SendInviteEmailParams) {
-  // If no Resend API key, log to console (useful for development)
-  if (!resend) {
-    return { success: false, error: "Resend API key not configured" }
-  }
+	// If no Resend API key, log to console (useful for development)
+	if (!resend) {
+		return { success: false, error: "Resend API key not configured" }
+	}
 
-  try {
-    await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to,
-      subject: `You've been invited to join ${organizationName}`,
-      html: `
+	try {
+		await resend.emails.send({
+			from: "onboarding@resend.dev",
+			to,
+			subject: `You've been invited to join ${organizationName}`,
+			html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>You've been invited to join ${organizationName}</h2>
           <p>${inviterName} has invited you to join their organization as a <strong>${roleName}</strong>.</p>
@@ -41,11 +41,11 @@ export async function sendInviteEmail({
           <p style="color: #666; font-size: 14px;">If you didn't expect this invitation, you can safely ignore this email.</p>
         </div>
       `,
-    })
+		})
 
-    return { success: true }
-  } catch (error) {
-    console.error("[v0] Failed to send email:", error)
-    return { success: false, error: "Failed to send email" }
-  }
+		return { success: true }
+	} catch (error) {
+		console.error("[v0] Failed to send email:", error)
+		return { success: false, error: "Failed to send email" }
+	}
 }

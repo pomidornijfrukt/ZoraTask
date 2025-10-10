@@ -212,10 +212,6 @@ export default async function ProjectsPage() {
 						<p className="text-muted-foreground mb-6">
 							Create your first project to get started with Zora.
 						</p>
-						<CreateProjectDialog
-							organizations={organizations}
-							createProject={createProject}
-						/>
 					</div>
 				)}
 			</div>

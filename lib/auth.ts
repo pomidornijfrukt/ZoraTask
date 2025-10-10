@@ -1,11 +1,11 @@
-import { betterAuth } from "better-auth"
+import { type BetterAuthOptions, betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { admin, openAPI, organization } from "better-auth/plugins"
 import * as schema from "@/lib/db/schemas"
 import { db } from "./db"
 import { env } from "./env"
 
-export const auth = betterAuth({
+export const auth = betterAuth<BetterAuthOptions>({
 	secret: env.BETTER_AUTH_SECRET,
 	session: {
 		cookieCache: {
@@ -34,5 +34,12 @@ export const auth = betterAuth({
 			clientSecret: env.GOOGLE_CLIENT_SECRET,
 		},
 	},
-	enableEmailPassword: false,
+
+	advanced: {
+		useSecureCookies: true,
+	},
+
+	emailAndPassword: {
+		enabled: false,
+	},
 })

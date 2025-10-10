@@ -1,24 +1,35 @@
-import { ArrowLeft, Plus, Settings } from "lucide-react"
+import { ArrowLeft, Settings } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { KanbanBoard } from "@/components/kanban-board"
+import { KanbanBoard } from "@/components/project/kanban-board"
 import { Button } from "@/components/ui/button"
-import { getProject, getTasksByProject } from "@/lib/data"
+import { createCategory } from "@/lib/actions/categories"
+import {
+	getCategoriesByProject,
+	getPrioritiesByProject,
+	getProject,
+	getProjectMembers,
+} from "@/lib/data/projects"
+import { getProjectTasksMetadata, getTasksByProject } from "@/lib/data/task"
 
-interface BoardPageProps {
+export default async function BoardPage({
+	params,
+}: {
 	params: {
 		id: string
 	}
-}
-
-export default function BoardPage({ params }: BoardPageProps) {
-	const project = getProject(params.id)
+}) {
+	const project = await getProject(params.id)
 
 	if (!project) {
 		notFound()
 	}
 
-	const tasks = getTasksByProject(params.id)
+	const tasks = await getTasksByProject(params.id)
+	const categories = await getCategoriesByProject(params.id)
+	const priorities = await getPrioritiesByProject(params.id)
+	const metadatas = await getProjectTasksMetadata(params.id)
+	const members = await getProjectMembers(params.id)
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -45,18 +56,27 @@ export default function BoardPage({ params }: BoardPageProps) {
 						</div>
 					</div>
 					<div className="flex gap-2">
-						<Button variant="outline">
-							<Settings className="h-4 w-4 mr-2" />
-							Board Settings
-						</Button>
-						<Button>
-							<Plus className="h-4 w-4 mr-2" />
-							Add Task
+						<Button asChild variant="outline">
+							<Link
+								href={`/projects/${project.id}/settings`}
+								className="flex items-center gap-2"
+							>
+								<Settings className="h-4 w-4 mr-2" />
+								Project Settings
+							</Link>
 						</Button>
 					</div>
 				</div>
 
-				<KanbanBoard project={project} tasks={tasks} />
+				<KanbanBoard
+					project={project}
+					tasks={tasks}
+					categories={categories}
+					priorities={priorities}
+					metadatas={metadatas}
+					members={members}
+					createCategory={createCategory}
+				/>
 			</div>
 		</div>
 	)

@@ -43,7 +43,7 @@ function SelectTrigger({
 			{...props}
 		>
 			{children}
-			<SelectPrimitive.Icon asChild={true}>
+			<SelectPrimitive.Icon asChild>
 				<ChevronDownIcon className="size-4 opacity-50" />
 			</SelectPrimitive.Icon>
 		</SelectPrimitive.Trigger>
@@ -54,6 +54,7 @@ function SelectContent({
 	className,
 	children,
 	position = "popper",
+	align = "center",
 	...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
 	return (
@@ -67,6 +68,7 @@ function SelectContent({
 					className,
 				)}
 				position={position}
+				align={align}
 				{...props}
 			>
 				<SelectScrollUpButton />

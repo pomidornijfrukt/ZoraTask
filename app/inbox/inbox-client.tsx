@@ -22,9 +22,13 @@ interface InboxClientProps {
 		inviterName: string
 		expiresAt: Date
 	}>
+	onInviteUpdate?: () => void
 }
 
-export function InboxClient({ initialInvites }: InboxClientProps) {
+export function InboxClient({
+	initialInvites,
+	onInviteUpdate,
+}: InboxClientProps) {
 	const [invites, setInvites] = useState(initialInvites)
 	const [loadingId, setLoadingId] = useState<string | null>(null)
 	const [error, setError] = useState<string | null>(null)
@@ -40,6 +44,8 @@ export function InboxClient({ initialInvites }: InboxClientProps) {
 			if (result.success) {
 				// Remove the accepted invite from the list
 				setInvites((prev) => prev.filter((invite) => invite.id !== inviteId))
+				// Notify parent to refresh the count in header
+				onInviteUpdate?.()
 				// Redirect to the organization page
 				router.push(`/organization/${result.organizationSlug}`)
 			} else {

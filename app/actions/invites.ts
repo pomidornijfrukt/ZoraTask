@@ -1,6 +1,6 @@
 "use server"
 
-import { and, eq } from "drizzle-orm"
+import { and, count, eq } from "drizzle-orm"
 import { nanoid } from "nanoid"
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
@@ -323,11 +323,39 @@ export async function getUserPendingInvites() {
 			.where(
 				and(eq(invitation.email, userEmail), eq(invitation.status, "pending")),
 			)
-			.orderBy(invitation.status)
+			.orderBy(invitation.expiresAt)
 
 		return { success: true, invites }
 	} catch (error) {
 		console.error("Error getting user pending invites:", error)
 		return { success: false, error: "Failed to get invitations" }
+	}
+}
+
+export async function getUserPendingInvitesCount() {
+	try {
+		const session = await auth.api.getSession({
+			headers: await headers(),
+		})
+
+		if (!session?.user?.email) {
+			return { success: false, error: "Unauthorized" }
+		}
+
+		const userEmail = session.user.email
+
+		const result: { count: number }[] = await db
+			.select({ count: count() })
+			.from(invitation)
+			.where(
+				and(eq(invitation.email, userEmail), eq(invitation.status, "pending")),
+			)
+
+		const pendingCount = result[0]?.count || 0
+
+		return { success: true, count: pendingCount }
+	} catch (error) {
+		console.error("Error getting user pending invites count:", error)
+		return { success: false, error: "Failed to get invites count" }
 	}
 }

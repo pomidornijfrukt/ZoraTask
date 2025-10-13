@@ -6,7 +6,6 @@ import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { invitation, member, organization, roles, user } from "@/lib/db/schemas"
-import { sendInviteEmail } from "@/lib/email"
 import { hasPermission, PERMISSIONS } from "@/lib/permissions"
 
 interface SendInviteInput {
@@ -96,17 +95,6 @@ export async function sendInvite(input: SendInviteInput) {
 			status: "pending",
 			expiresAt,
 			inviterId: currentUserId,
-		})
-
-		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-
-		const inviteUrl = `${baseUrl}/invites/${inviteId}`
-		await sendInviteEmail({
-			to: input.email,
-			organizationName: org[0].name,
-			inviterName: session.user.name || "Someone",
-			inviteUrl,
-			roleName: role[0].name,
 		})
 
 		return { success: true, inviteId }
@@ -304,6 +292,46 @@ export async function getPendingInvites(organizationId: string) {
 		return { success: true, invites }
 	} catch (error) {
 		console.error("Error getting pending invites:", error)
+		return { success: false, error: "Failed to get invitations" }
+	}
+}
+
+// NEW: Get user's pending invitations
+export async function getUserPendingInvites() {
+	try {
+		const session = await auth.api.getSession({
+			headers: await headers(),
+		})
+
+		if (!session?.user?.email) {
+			return { success: false, error: "Unauthorized" }
+		}
+
+		const userEmail = session.user.email
+
+		const invites = await db
+			.select({
+				id: invitation.id,
+				organizationName: organization.name,
+				roleName: roles.name,
+				inviterName: user.name,
+				expiresAt: invitation.expiresAt,
+			})
+			.from(invitation)
+			.innerJoin(organization, eq(invitation.organizationId, organization.id))
+			.innerJoin(user, eq(invitation.inviterId, user.id))
+			.innerJoin(roles, eq(invitation.role, roles.id))
+			.where(
+				and(
+					eq(invitation.email, userEmail),
+					eq(invitation.status, "pending")
+				)
+			)
+			.orderBy(invitation.status)
+
+		return { success: true, invites }
+	} catch (error) {
+		console.error("Error getting user pending invites:", error)
 		return { success: false, error: "Failed to get invitations" }
 	}
 }

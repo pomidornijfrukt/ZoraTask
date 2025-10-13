@@ -6,23 +6,24 @@ import {
 	UserAvatar,
 	UserButton,
 } from "@daveyplate/better-auth-ui"
-import { FolderOpen, Home, Kanban, type LucideIcon } from "lucide-react"
+import { FolderOpen, Home, Kanban, Bell, type LucideIcon } from "lucide-react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth/auth-client"
 import { ThemeToggle } from "./theme-toggle"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function Header() {
 	const pathname = usePathname()
-
-	// Access session data using Better Auth's useSession hook
 	const { data: session, isPending } = authClient.useSession()
-
-	// Determine if the user is signed in
 	const isSignedIn = !isPending && session?.user
-
-	// Access active organization using Better Auth's useActiveOrganization hook
 	const { data: activeOrg } = authClient.useActiveOrganization()
 
 	return (
@@ -70,14 +71,30 @@ export function Header() {
 				<ThemeToggle />
 				{/* Auth buttons */}
 				{isSignedIn ? (
-					<UserButton
-						size="icon"
-						trigger={
-							<button type="button">
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<button type="button" className="flex items-center">
 								<UserAvatar user={session?.user} />
 							</button>
-						}
-					/>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuItem asChild>
+								<Link href="/inbox" className="flex items-center space-x-2 cursor-pointer">
+									<Bell className="h-4 w-4" />
+									<span>Invites</span>
+								</Link>
+							</DropdownMenuItem>
+							<DropdownMenuSeparator />
+							<UserButton
+								size="sm"
+								trigger={
+									<button type="button" className="w-full text-left">
+										Account
+									</button>
+								}
+							/>
+						</DropdownMenuContent>
+					</DropdownMenu>
 				) : (
 					<Button variant="outline" asChild>
 						<Link href="/auth/sign-in">Sign in</Link>

@@ -18,7 +18,7 @@ interface SendInviteInput {
 export async function sendInvite(input: SendInviteInput) {
 	try {
 		const session = await auth.api.getSession({
-			headers: headers(),
+			headers: await headers(),
 		})
 
 		if (!session?.user) {
@@ -119,7 +119,7 @@ export async function sendInvite(input: SendInviteInput) {
 export async function acceptInvite(inviteId: string) {
 	try {
 		const session = await auth.api.getSession({
-			headers: headers(),
+			headers: await headers(),
 		})
 
 		if (!session?.user) {
@@ -236,7 +236,7 @@ export async function getInvite(inviteId: string) {
 export async function getOrganizationRoles(organizationId: string) {
 	try {
 		const session = await auth.api.getSession({
-			headers: headers(),
+			headers: await headers(),
 		})
 
 		if (!session?.user) {
@@ -261,7 +261,7 @@ export async function getOrganizationRoles(organizationId: string) {
 export async function getPendingInvites(organizationId: string) {
 	try {
 		const session = await auth.api.getSession({
-			headers: headers(),
+			headers: await headers(),
 		})
 
 		if (!session?.user) {

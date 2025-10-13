@@ -1,3 +1,4 @@
+// header.tsx
 "use client"
 
 import {
@@ -6,19 +7,12 @@ import {
 	UserAvatar,
 	UserButton,
 } from "@daveyplate/better-auth-ui"
-import { FolderOpen, Home, Kanban, Bell, type LucideIcon } from "lucide-react"
+import { Bell, FolderOpen, Home, Kanban, type LucideIcon } from "lucide-react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth/auth-client"
 import { ThemeToggle } from "./theme-toggle"
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 export function Header() {
 	const pathname = usePathname()
@@ -71,30 +65,23 @@ export function Header() {
 				<ThemeToggle />
 				{/* Auth buttons */}
 				{isSignedIn ? (
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<button type="button" className="flex items-center">
-								<UserAvatar user={session?.user} />
-							</button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuItem asChild>
-								<Link href="/inbox" className="flex items-center space-x-2 cursor-pointer">
-									<Bell className="h-4 w-4" />
-									<span>Invites</span>
-								</Link>
-							</DropdownMenuItem>
-							<DropdownMenuSeparator />
-							<UserButton
-								size="sm"
-								trigger={
-									<button type="button" className="w-full text-left">
-										Account
-									</button>
-								}
-							/>
-						</DropdownMenuContent>
-					</DropdownMenu>
+					<div className="flex items-center space-x-2">
+						{/* Inbox button */}
+						<Button variant="outline" size="icon" asChild>
+							<Link href="/inbox" className="relative">
+								<Bell className="h-4 w-4" />
+							</Link>
+						</Button>
+						{/* User dropdown */}
+						<UserButton
+							size="icon"
+							trigger={
+								<button type="button">
+									<UserAvatar user={session?.user} />
+								</button>
+							}
+						/>
+					</div>
 				) : (
 					<Button variant="outline" asChild>
 						<Link href="/auth/sign-in">Sign in</Link>

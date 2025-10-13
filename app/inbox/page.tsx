@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 import { getUserPendingInvites } from "@/app/actions/invites"
 import { InboxClient } from "./inbox-client"
 

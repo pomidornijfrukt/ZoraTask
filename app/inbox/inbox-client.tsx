@@ -1,12 +1,17 @@
-// app/inbox/inbox-client.tsx
 "use client"
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { acceptInvite } from "@/app/actions/invites"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 
 interface InboxClientProps {
@@ -34,7 +39,7 @@ export function InboxClient({ initialInvites }: InboxClientProps) {
 
 			if (result.success) {
 				// Remove the accepted invite from the list
-				setInvites(prev => prev.filter(invite => invite.id !== inviteId))
+				setInvites((prev) => prev.filter((invite) => invite.id !== inviteId))
 				// Redirect to the organization page
 				router.push(`/organization/${result.organizationSlug}`)
 			} else {
@@ -85,7 +90,9 @@ export function InboxClient({ initialInvites }: InboxClientProps) {
 							<CardHeader>
 								<div className="flex items-center justify-between">
 									<div>
-										<CardTitle className="text-xl">{invite.organizationName}</CardTitle>
+										<CardTitle className="text-xl">
+											{invite.organizationName}
+										</CardTitle>
 										<CardDescription>
 											Invited by {invite.inviterName} • Role: {invite.roleName}
 										</CardDescription>
@@ -108,7 +115,9 @@ export function InboxClient({ initialInvites }: InboxClientProps) {
 										disabled={loadingId === invite.id || expired}
 										size="sm"
 									>
-										{loadingId === invite.id && <Spinner className="mr-2 h-4 w-4" />}
+										{loadingId === invite.id && (
+											<Spinner className="mr-2 h-4 w-4" />
+										)}
 										{expired ? "Expired" : "Accept"}
 									</Button>
 								</div>

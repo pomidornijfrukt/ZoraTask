@@ -296,7 +296,6 @@ export async function getPendingInvites(organizationId: string) {
 	}
 }
 
-// NEW: Get user's pending invitations
 export async function getUserPendingInvites() {
 	try {
 		const session = await auth.api.getSession({
@@ -322,10 +321,7 @@ export async function getUserPendingInvites() {
 			.innerJoin(user, eq(invitation.inviterId, user.id))
 			.innerJoin(roles, eq(invitation.role, roles.id))
 			.where(
-				and(
-					eq(invitation.email, userEmail),
-					eq(invitation.status, "pending")
-				)
+				and(eq(invitation.email, userEmail), eq(invitation.status, "pending")),
 			)
 			.orderBy(invitation.status)
 

@@ -1,6 +1,6 @@
 "use server"
 
-import { and, count, eq } from "drizzle-orm"
+import { and, count, eq, gt } from "drizzle-orm"
 import { nanoid } from "nanoid"
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
@@ -246,6 +246,157 @@ export async function getOrganizationRoles(organizationId: string) {
 	}
 }
 
+export async function rejectInvite(inviteId: string) {
+	try {
+		const session = await auth.api.getSession({
+			headers: await headers(),
+		})
+
+		if (!session?.user) {
+			return { success: false, error: "Unauthorized" }
+		}
+
+		const currentUserEmail = session.user.email
+
+		const invite = await db
+			.select()
+			.from(invitation)
+			.where(eq(invitation.id, inviteId))
+			.limit(1)
+
+		if (!invite.length) {
+			return { success: false, error: "Invitation not found" }
+		}
+
+		const inviteData = invite[0]
+
+		if (inviteData.email !== currentUserEmail) {
+			return {
+				success: false,
+				error: "This invitation is for a different email address",
+			}
+		}
+
+		if (inviteData.status !== "pending") {
+			return { success: false, error: "This invitation has already been used" }
+		}
+
+		await db
+			.update(invitation)
+			.set({ status: "rejected" })
+			.where(eq(invitation.id, inviteId))
+
+		return { success: true }
+	} catch (error) {
+		console.error("Error rejecting invite:", error)
+		return { success: false, error: "Failed to reject invitation" }
+	}
+}
+
+export async function resendInvite(inviteId: string) {
+	try {
+		const session = await auth.api.getSession({
+			headers: await headers(),
+		})
+
+		if (!session?.user) {
+			return { success: false, error: "Unauthorized" }
+		}
+
+		const invite = await db
+			.select({
+				id: invitation.id,
+				organizationId: invitation.organizationId,
+				status: invitation.status,
+				expiresAt: invitation.expiresAt,
+			})
+			.from(invitation)
+			.where(eq(invitation.id, inviteId))
+			.limit(1)
+
+		if (!invite.length) {
+			return { success: false, error: "Invitation not found" }
+		}
+
+		const inviteData = invite[0]
+
+		const canManage = await hasPermission(
+			session.user.id,
+			inviteData.organizationId,
+			PERMISSIONS.MANAGE_MEMBERS,
+		)
+
+		if (!canManage) {
+			return {
+				success: false,
+				error: "You don't have permission to resend invitations",
+			}
+		}
+
+		if (inviteData.status !== "pending") {
+			return { success: false, error: "Cannot resend a used invitation" }
+		}
+
+		if (new Date() > inviteData.expiresAt) {
+			return { success: false, error: "Cannot resend an expired invitation" }
+		}
+
+		const newExpiresAt = new Date()
+		newExpiresAt.setDate(newExpiresAt.getDate() + 7)
+
+		await db
+			.update(invitation)
+			.set({ expiresAt: newExpiresAt })
+			.where(eq(invitation.id, inviteId))
+
+		return { success: true }
+	} catch (error) {
+		console.error("Error resending invite:", error)
+		return { success: false, error: "Failed to resend invitation" }
+	}
+}
+
+export async function getUserPendingInvites() {
+	try {
+		const session = await auth.api.getSession({
+			headers: await headers(),
+		})
+
+		if (!session?.user?.email) {
+			return { success: false, error: "Unauthorized" }
+		}
+
+		const userEmail = session.user.email
+		const now = new Date()
+
+		const invites = await db
+			.select({
+				id: invitation.id,
+				organizationName: organization.name,
+				roleName: roles.name,
+				inviterName: user.name,
+				expiresAt: invitation.expiresAt,
+			})
+			.from(invitation)
+			.innerJoin(organization, eq(invitation.organizationId, organization.id))
+			.innerJoin(user, eq(invitation.inviterId, user.id))
+			.innerJoin(roles, eq(invitation.role, roles.id))
+			.where(
+				and(
+					eq(invitation.email, userEmail),
+					eq(invitation.status, "pending"),
+					gt(invitation.expiresAt, now),
+				),
+			)
+			.orderBy(invitation.expiresAt)
+
+		return { success: true, invites }
+	} catch (error) {
+		console.error("Error getting user pending invites:", error)
+		return { success: false, error: "Failed to get invitations" }
+	}
+}
+
 export async function getPendingInvites(organizationId: string) {
 	try {
 		const session = await auth.api.getSession({
@@ -269,6 +420,8 @@ export async function getPendingInvites(organizationId: string) {
 			}
 		}
 
+		const now = new Date()
+
 		const invites = await db
 			.select({
 				id: invitation.id,
@@ -286,48 +439,13 @@ export async function getPendingInvites(organizationId: string) {
 				and(
 					eq(invitation.organizationId, organizationId),
 					eq(invitation.status, "pending"),
+					gt(invitation.expiresAt, now),
 				),
 			)
 
 		return { success: true, invites }
 	} catch (error) {
 		console.error("Error getting pending invites:", error)
-		return { success: false, error: "Failed to get invitations" }
-	}
-}
-
-export async function getUserPendingInvites() {
-	try {
-		const session = await auth.api.getSession({
-			headers: await headers(),
-		})
-
-		if (!session?.user?.email) {
-			return { success: false, error: "Unauthorized" }
-		}
-
-		const userEmail = session.user.email
-
-		const invites = await db
-			.select({
-				id: invitation.id,
-				organizationName: organization.name,
-				roleName: roles.name,
-				inviterName: user.name,
-				expiresAt: invitation.expiresAt,
-			})
-			.from(invitation)
-			.innerJoin(organization, eq(invitation.organizationId, organization.id))
-			.innerJoin(user, eq(invitation.inviterId, user.id))
-			.innerJoin(roles, eq(invitation.role, roles.id))
-			.where(
-				and(eq(invitation.email, userEmail), eq(invitation.status, "pending")),
-			)
-			.orderBy(invitation.expiresAt)
-
-		return { success: true, invites }
-	} catch (error) {
-		console.error("Error getting user pending invites:", error)
 		return { success: false, error: "Failed to get invitations" }
 	}
 }

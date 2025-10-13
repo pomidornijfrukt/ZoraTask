@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { acceptInvite } from "@/app/actions/invites"
+import { acceptInvite, rejectInvite } from "@/app/actions/invites"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -43,12 +43,31 @@ export function InboxClient({
 
 			if (result.success) {
 				setInvites((prev) => prev.filter((invite) => invite.id !== inviteId))
-
-				onInviteUpdate?.() // Notify parent to refresh the count in header
-
-				router.push(`/organization/${result.organizationSlug}`)
+				onInviteUpdate?.()
+				// TODO: Redirect to organizations
+				router.push(`/account/organizations`)
 			} else {
 				setError(result.error || "Failed to accept invitation")
+			}
+		} catch (_err) {
+			setError("An unexpected error occurred")
+		} finally {
+			setLoadingId(null)
+		}
+	}
+
+	const handleReject = async (inviteId: string) => {
+		setLoadingId(inviteId)
+		setError(null)
+
+		try {
+			const result = await rejectInvite(inviteId)
+
+			if (result.success) {
+				setInvites((prev) => prev.filter((invite) => invite.id !== inviteId))
+				onInviteUpdate?.()
+			} else {
+				setError(result.error || "Failed to reject invitation")
 			}
 		} catch (_err) {
 			setError("An unexpected error occurred")
@@ -115,16 +134,30 @@ export function InboxClient({
 											{expired && " (Expired)"}
 										</div>
 									</div>
-									<Button
-										onClick={() => handleAccept(invite.id)}
-										disabled={loadingId === invite.id || expired}
-										size="sm"
-									>
-										{loadingId === invite.id && (
-											<Spinner className="mr-2 h-4 w-4" />
-										)}
-										{expired ? "Expired" : "Accept"}
-									</Button>
+									<div className="flex items-center space-x-2">
+										<Button
+											variant="outline"
+											onClick={() => handleReject(invite.id)}
+											disabled={loadingId === invite.id}
+											size="sm"
+										>
+											{loadingId === invite.id ? (
+												<Spinner className="h-4 w-4" />
+											) : (
+												"Reject"
+											)}
+										</Button>
+										<Button
+											onClick={() => handleAccept(invite.id)}
+											disabled={loadingId === invite.id || expired}
+											size="sm"
+										>
+											{loadingId === invite.id && (
+												<Spinner className="mr-2 h-4 w-4" />
+											)}
+											{expired ? "Expired" : "Accept"}
+										</Button>
+									</div>
 								</div>
 							</CardContent>
 						</Card>

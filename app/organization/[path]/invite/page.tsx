@@ -12,7 +12,6 @@ interface PageProps {
 export default async function OrganizationInvitesPage({ params }: PageProps) {
 	const { path } = await params
 
-	// Get organization by slug
 	const org = await db
 		.select()
 		.from(organization)
@@ -26,7 +25,6 @@ export default async function OrganizationInvitesPage({ params }: PageProps) {
 	const organizationId = org[0].id
 	const organizationName = org[0].name
 
-	// Fetch roles on the server side
 	const orgRoles = await db
 		.select({
 			id: roles.id,
@@ -35,7 +33,6 @@ export default async function OrganizationInvitesPage({ params }: PageProps) {
 		.from(roles)
 		.where(eq(roles.organizationId, organizationId))
 
-	// Fetch pending invites on the server side
 	const pendingInvites = await db
 		.select({
 			id: invitation.id,

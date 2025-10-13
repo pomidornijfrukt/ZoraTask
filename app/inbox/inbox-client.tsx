@@ -42,11 +42,10 @@ export function InboxClient({
 			const result = await acceptInvite(inviteId)
 
 			if (result.success) {
-				// Remove the accepted invite from the list
 				setInvites((prev) => prev.filter((invite) => invite.id !== inviteId))
-				// Notify parent to refresh the count in header
-				onInviteUpdate?.()
-				// Redirect to the organization page
+
+				onInviteUpdate?.() // Notify parent to refresh the count in header
+
 				router.push(`/organization/${result.organizationSlug}`)
 			} else {
 				setError(result.error || "Failed to accept invitation")

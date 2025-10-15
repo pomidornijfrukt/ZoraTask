@@ -22,16 +22,29 @@ export default function InboxPage() {
 		const result = await getUserPendingInvites()
 
 		if (result.success) {
-			setInvites(result.invites || [])
+			setInvites(
+				(result.invites || []).map(
+					(invite: {
+						id: string
+						organizationName: string
+						roleName: string | null
+						inviterName: string
+						expiresAt: Date
+					}) => ({
+						...invite,
+						roleName: invite.roleName ?? "Memeber",
+					}),
+				),
+			)
 		} else {
 			setError(result.error || "Failed to load invites")
 		}
 		setLoading(false)
-	}, []) // Empty dependency array since we don't use any external variables
+	}, [])
 
 	useEffect(() => {
 		fetchInvites()
-	}, [fetchInvites]) // Now fetchInvites is stable and won't cause re-renders
+	}, [fetchInvites])
 
 	if (loading) {
 		return (

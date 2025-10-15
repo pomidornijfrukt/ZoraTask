@@ -122,7 +122,7 @@ export function InboxClient({
 										</CardDescription>
 									</div>
 									<Badge variant={expired ? "destructive" : "secondary"}>
-										{expired ? "Expired" : invite.roleName}
+										{invite.roleName}
 									</Badge>
 								</div>
 							</CardHeader>

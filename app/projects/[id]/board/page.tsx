@@ -19,17 +19,18 @@ export default async function BoardPage({
 		id: string
 	}
 }) {
-	const project = await getProject(params.id)
+	const { id } = await params
+	const project = await getProject(id)
 
 	if (!project) {
 		notFound()
 	}
 
-	const tasks = await getTasksByProject(params.id)
-	const categories = await getCategoriesByProject(params.id)
-	const priorities = await getPrioritiesByProject(params.id)
-	const metadatas = await getProjectTasksMetadata(params.id)
-	const members = await getProjectMembers(params.id)
+	const tasks = await getTasksByProject(id)
+	const categories = await getCategoriesByProject(id)
+	const priorities = await getPrioritiesByProject(id)
+	const metadatas = await getProjectTasksMetadata(id)
+	const members = await getProjectMembers(id)
 
 	return (
 		<div className="min-h-screen bg-background">

@@ -1,7 +1,6 @@
 "use client"
 
 import { Plus } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,51 +22,21 @@ import {
 	SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { createTaskForm } from "@/lib/actions/tasks"
 import type { Priority, Task } from "@/lib/types"
-
-interface AddTaskButtonProps {
-	projectId: string
-	categoryId: string
-	priorities: Priority[]
-	createTask: (data: {
-		name: string
-		description: string
-		categoryId: string
-		priorityId: string
-		projectId: string
-	}) => Promise<Task>
-}
 
 export function AddTaskButton({
 	projectId,
 	categoryId,
 	priorities,
-	createTask,
-}: AddTaskButtonProps) {
-	const router = useRouter()
+	handleCreateTask,
+}: {
+	projectId: string
+	categoryId: string
+	priorities: Priority[]
+	handleCreateTask: (newTask: Task) => void
+}) {
 	const [open, setOpen] = useState(false)
-
-	const handle = async (formData: FormData) => {
-		const name = formData.get("name") as string
-		const description = formData.get("description") as string
-		const priorityId = formData.get("priorityId") as string
-
-		if (!name) {
-			alert("Task name is required")
-			return
-		}
-
-		await createTask({
-			name,
-			description,
-			categoryId,
-			priorityId,
-			projectId,
-		})
-
-		setOpen(false)
-		router.refresh()
-	}
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -90,7 +59,14 @@ export function AddTaskButton({
 					</DialogDescription>
 				</DialogHeader>
 
-				<form action={handle} className="space-y-4">
+				<form
+					action={async (formData: FormData) => {
+						const task = await createTaskForm(formData, projectId, categoryId)
+						handleCreateTask(task)
+						setOpen(false)
+					}}
+					className="space-y-4"
+				>
 					<div>
 						<label
 							htmlFor="name"

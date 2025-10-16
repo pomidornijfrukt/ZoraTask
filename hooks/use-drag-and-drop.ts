@@ -27,22 +27,26 @@ export function useDragAndDrop(initialTasks: Task[]) {
 		const updated = tasks.map((t) =>
 			t.id === draggedTask.id ? { ...t, categoryId: newCategoryId } : t,
 		)
-		setTasks(updated)
 
+		startTransition(() => setTasks(updated))
 		startTransition(async () => {
 			try {
 				await updateTaskCategory(draggedTask.id, newCategoryId)
 			} catch (err) {
 				console.error("Failed to update category", err)
-				setTasks(tasks)
 			}
 		})
 
 		setDraggedTask(null)
 	}
 
+	const handleCreateTask = (newTask: Task) => {
+		setTasks([...tasks, newTask])
+	}
+
 	return {
 		tasks,
+		handleCreateTask,
 		isPending,
 		handleDragStart,
 		handleDragOver,

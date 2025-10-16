@@ -1,7 +1,10 @@
 "use client"
 
 import type { User } from "better-auth"
+import { useState } from "react"
 import { useDragAndDrop } from "@/hooks/use-drag-and-drop"
+import type { CommentWithAuthor } from "@/lib/data/comments"
+import { getTaskComments } from "@/lib/data/comments"
 import type {
 	Category,
 	Priority,
@@ -12,6 +15,7 @@ import type {
 import { AddCategoryButton } from "./add-category"
 import { Column } from "./category-column"
 import { TaskCard } from "./task-card"
+import { TaskDetailsDialog } from "./task-details-dialog"
 
 interface KanbanBoardProps {
 	project: Project
@@ -21,6 +25,7 @@ interface KanbanBoardProps {
 	createCategory: (projectId: string, name: string) => Promise<Category>
 	metadatas: TaskMetadata[]
 	members: User[]
+	currentUser?: User
 }
 
 export function KanbanBoard({
@@ -31,9 +36,34 @@ export function KanbanBoard({
 	createCategory,
 	metadatas,
 	members,
+	currentUser,
 }: KanbanBoardProps) {
 	const { tasks, handleDragStart, handleDragOver, handleDrop } =
 		useDragAndDrop(initialTasks)
+
+	const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
+	const [detailsOpen, setDetailsOpen] = useState(false)
+	const [taskComments, setTaskComments] = useState<CommentWithAuthor[]>([])
+
+	async function handleViewDetails(taskId: string) {
+		setSelectedTaskId(taskId)
+		const comments = await getTaskComments(taskId)
+		setTaskComments(comments)
+		setDetailsOpen(true)
+	}
+
+	function handleCloseDetails() {
+		setDetailsOpen(false)
+		setSelectedTaskId(null)
+		setTaskComments([])
+	}
+
+	const selectedTask = selectedTaskId
+		? tasks.find((t) => t.id === selectedTaskId)
+		: null
+	const selectedMetadata = selectedTaskId
+		? metadatas.find((m) => m.task.id === selectedTaskId)
+		: null
 
 	return (
 		<div className="flex gap-6 overflow-x-auto pb-4">
@@ -61,6 +91,7 @@ export function KanbanBoard({
 									metadata={metadata}
 									priorities={priorities}
 									members={members}
+									onViewDetails={handleViewDetails}
 								/>
 							)
 						})}
@@ -74,6 +105,17 @@ export function KanbanBoard({
 					createCategory={createCategory}
 				/>
 			</div>
+
+			{selectedTask && selectedMetadata && (
+				<TaskDetailsDialog
+					task={selectedTask}
+					metadata={selectedMetadata}
+					comments={taskComments}
+					currentUser={currentUser}
+					open={detailsOpen}
+					onOpenChange={handleCloseDetails}
+				/>
+			)}
 		</div>
 	)
 }

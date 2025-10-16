@@ -1,7 +1,7 @@
 "use client"
 
 import type { User } from "better-auth"
-import { Edit, MoreHorizontal, Trash2 } from "lucide-react"
+import { Edit, MessageSquare, MoreHorizontal, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type React from "react"
 import { useEffect, useMemo, useState } from "react"
@@ -42,6 +42,7 @@ interface TaskCardProps {
 	isLoading?: boolean
 	priorities: Priority[]
 	members: User[]
+	onViewDetails?: (taskId: string) => void
 }
 
 export function TaskCard({
@@ -51,6 +52,7 @@ export function TaskCard({
 	isLoading = false,
 	priorities,
 	members,
+	onViewDetails,
 }: TaskCardProps) {
 	const [editOpen, setEditOpen] = useState(false)
 	const [submitting, setSubmitting] = useState(false)
@@ -171,6 +173,16 @@ export function TaskCard({
 								</DropdownMenuTrigger>
 
 								<DropdownMenuContent align="end">
+									<DropdownMenuItem
+										onClick={() => {
+											onViewDetails?.(task.id)
+										}}
+										className="flex items-center gap-2"
+									>
+										<MessageSquare className="h-4 w-4" />
+										View Details & Comments
+									</DropdownMenuItem>
+
 									<DropdownMenuItem
 										onClick={() => {
 											setEditOpen(true)

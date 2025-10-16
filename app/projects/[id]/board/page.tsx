@@ -1,9 +1,11 @@
 import { ArrowLeft, Settings } from "lucide-react"
+import { headers } from "next/headers"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { KanbanBoard } from "@/components/project/kanban-board"
 import { Button } from "@/components/ui/button"
 import { createCategory } from "@/lib/actions/categories"
+import { auth } from "@/lib/auth"
 import {
 	getCategoriesByProject,
 	getPrioritiesByProject,
@@ -25,6 +27,7 @@ export default async function BoardPage({
 		notFound()
 	}
 
+	const session = await auth.api.getSession({ headers: await headers() })
 	const tasks = await getTasksByProject(params.id)
 	const categories = await getCategoriesByProject(params.id)
 	const priorities = await getPrioritiesByProject(params.id)
@@ -76,6 +79,7 @@ export default async function BoardPage({
 					metadatas={metadatas}
 					members={members}
 					createCategory={createCategory}
+					currentUser={session?.user}
 				/>
 			</div>
 		</div>

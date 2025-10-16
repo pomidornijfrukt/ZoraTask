@@ -1,9 +1,9 @@
 "use server"
 
-import { and, eq, isNull } from "drizzle-orm"
+import { and, eq, isNull, ne } from "drizzle-orm"
 import { v7 } from "uuid"
 import { db } from "@/lib/db"
-import { comments } from "../db/schemas"
+import { comments, tasks } from "../db/schemas"
 import { getSessionUserId } from "./utils"
 
 export async function createComment(data: {
@@ -82,12 +82,18 @@ export async function getCommentsByTask(taskId: string) {
 
 export async function getTaskComments(taskId: string) {
 	// Get only team discussion comments (exclude the description comment)
-	const taskComments = await db
+	const rows = await db
 		.select()
 		.from(comments)
-		.where(and(eq(comments.taskId, taskId), isNull(comments.parentId)))
+		.leftJoin(tasks, eq(tasks.id, comments.taskId))
+		.where(
+			and(
+				eq(comments.taskId, taskId),
+				isNull(comments.parentId),
+				ne(comments.id, tasks.descriptionId),
+			),
+		)
 
-	// Filter out the description comment - it's the one referenced by task.descriptionId
-	// For now, return all root-level comments; the UI can handle filtering
-	return taskComments
+	// comments are in rows[i].comments due to the join
+	return rows.map((r) => r.comments)
 }

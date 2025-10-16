@@ -23,22 +23,23 @@ import { getPrioritiesByProject, getProjectMembers } from "@/lib/data/projects"
 export default async function ProjectSettingsPage({
 	params,
 }: {
-	params: { id: string }
+	params: Promise<{ id: string }>
 }) {
-	const project = await getProjectById(params.id)
+	const { id } = await params
+	const project = await getProjectById(id)
 	if (!project) redirect("/projects")
 
 	async function handleUpdate(formData: FormData) {
 		"use server"
 		const name = formData.get("name") as string
 		const description = formData.get("description") as string
-		await updateProject(params.id, { name, description })
-		revalidatePath(`/projects/${params.id}/settings`)
+		await updateProject(id, { name, description })
+		revalidatePath(`/projects/${id}/settings`)
 	}
 
 	async function handleDelete() {
 		"use server"
-		await deleteProject(params.id)
+		await deleteProject(id)
 		redirect("/projects")
 	}
 
@@ -47,7 +48,7 @@ export default async function ProjectSettingsPage({
 			<div className="flex items-center gap-4 mb-8">
 				<Button variant="ghost" size="sm" asChild={true}>
 					<Link
-						href={`/projects/${params.id}`}
+						href={`/projects/${id}`}
 						className="flex items-center gap-2"
 					>
 						<ArrowLeft className="h-4 w-4" />
@@ -73,9 +74,9 @@ export default async function ProjectSettingsPage({
 						<Button type="submit">Save Changes</Button>
 					</form>
 
-					<MembersSection projectId={params.id} />
+					<MembersSection projectId={id} />
 
-					<PrioritySection projectId={params.id} />
+					<PrioritySection projectId={id} />
 
 					<div className="border-t pt-6 mt-6">
 						<h3 className="text-lg font-semibold text-red-600">Danger Zone</h3>

@@ -25,17 +25,18 @@ import { getTaskMetadataById, getTasksByProject } from "@/lib/data/task"
 export default async function ProjectPage({
 	params,
 }: {
-	params: { id: string }
+	params: Promise<{ id: string }>
 }) {
-	const project = await getProject(params.id)
+	const { id } = await params
+	const project = await getProject(id)
 
 	if (!project) {
 		notFound()
 	}
 
-	const members = await getProjectMembers(params.id)
+	const members = await getProjectMembers(id)
 
-	const tasks = await getTasksByProject(params.id)
+	const tasks = await getTasksByProject(id)
 	const todoTasks = tasks.filter((task) => task.executionStatus === "todo")
 	const inProgressTasks = tasks.filter(
 		(task) => task.executionStatus === "in-progress",

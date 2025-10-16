@@ -17,22 +17,21 @@ import { getProjectTasksMetadata, getTasksByProject } from "@/lib/data/task"
 export default async function BoardPage({
 	params,
 }: {
-	params: {
-		id: string
-	}
+	params: Promise<{ id: string }>
 }) {
-	const project = await getProject(params.id)
+	const { id } = await params
+	const project = await getProject(id)
 
 	if (!project) {
 		notFound()
 	}
 
 	const session = await auth.api.getSession({ headers: await headers() })
-	const tasks = await getTasksByProject(params.id)
-	const categories = await getCategoriesByProject(params.id)
-	const priorities = await getPrioritiesByProject(params.id)
-	const metadatas = await getProjectTasksMetadata(params.id)
-	const members = await getProjectMembers(params.id)
+	const tasks = await getTasksByProject(id)
+	const categories = await getCategoriesByProject(id)
+	const priorities = await getPrioritiesByProject(id)
+	const metadatas = await getProjectTasksMetadata(id)
+	const members = await getProjectMembers(id)
 
 	return (
 		<div className="min-h-screen bg-background">

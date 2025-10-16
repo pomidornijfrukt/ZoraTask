@@ -22,6 +22,20 @@ export async function updateCategory(id: string, name: string) {
 	return { id, name }
 }
 
+export async function updateCategoryOrder(id: string, order: string) {
+	await db.update(categories).set({ order }).where(eq(categories.id, id))
+	return { ok: true }
+}
+
+export async function updateCategoriesOrder(
+	updates: { id: string; order: string }[],
+) {
+	for (const { id, order } of updates) {
+		await db.update(categories).set({ order }).where(eq(categories.id, id))
+	}
+	return { ok: true }
+}
+
 export async function deleteCategory(id: string) {
 	await db.delete(categories).where(eq(categories.id, id))
 	return { ok: true }

@@ -1,5 +1,7 @@
 "use client"
 
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import type { User } from "better-auth"
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -38,19 +40,19 @@ import type { Priority, Task, TaskMetadata } from "@/lib/types"
 interface TaskCardProps {
 	task: Task
 	metadata: TaskMetadata
-	handleDragStart: (e: React.DragEvent, task: Task) => void
 	isLoading?: boolean
 	priorities: Priority[]
 	members: User[]
+	isDragOverlay?: boolean
 }
 
 export function TaskCard({
 	task,
 	metadata,
-	handleDragStart,
 	isLoading = false,
 	priorities,
 	members,
+	isDragOverlay = false,
 }: TaskCardProps) {
 	const [editOpen, setEditOpen] = useState(false)
 	const [submitting, setSubmitting] = useState(false)
@@ -141,86 +143,86 @@ export function TaskCard({
 	}
 
 	return (
-		<Card
-			className="bg-background border-border cursor-move hover:border-primary/50 transition-colors"
-			draggable={!isLoading}
-			onDragStart={(e) => handleDragStart(e, task)}
-			style={{ opacity: isLoading ? 0.6 : 1 }}
-		>
-			<CardContent className="p-4">
-				<div className="space-y-3">
-					{/* Header */}
-					<div className="flex items-start justify-between gap-2">
-						<h4 className="font-medium text-foreground text-sm leading-tight">
-							{task.name}
-						</h4>
+		<>
+			<Card
+				className={`bg-background border-border transition-colors ${isDragOverlay ? "cursor-grabbing rotate-3 shadow-lg" : "cursor-grab hover:border-primary/50"}`}
+				style={{ opacity: isLoading ? 0.6 : 1 }}
+			>
+				<CardContent className="p-4">
+					<div className="space-y-3">
+						{/* Header */}
+						<div className="flex items-start justify-between gap-2">
+							<h4 className="font-medium text-foreground text-sm leading-tight">
+								{task.name}
+							</h4>
 
-						<div className="flex items-center gap-2">
-							{metadata?.priority && (
-								<span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
-									{metadata.priority?.name}
-								</span>
-							)}
+							<div className="flex items-center gap-2">
+								{metadata?.priority && (
+									<span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
+										{metadata.priority?.name}
+									</span>
+								)}
 
-							{/* 3-dot menu */}
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button variant="ghost" size="sm" className="p-1">
-										<MoreHorizontal className="h-4 w-4" />
-									</Button>
-								</DropdownMenuTrigger>
+								{/* 3-dot menu */}
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<Button variant="ghost" size="sm" className="p-1">
+											<MoreHorizontal className="h-4 w-4" />
+										</Button>
+									</DropdownMenuTrigger>
 
-								<DropdownMenuContent align="end">
-									<DropdownMenuItem
-										onClick={() => {
-											setEditOpen(true)
-										}}
-										className="flex items-center gap-2"
-									>
-										<Edit className="h-4 w-4" />
-										Edit
-									</DropdownMenuItem>
+									<DropdownMenuContent align="end">
+										<DropdownMenuItem
+											onClick={() => {
+												setEditOpen(true)
+											}}
+											className="flex items-center gap-2"
+										>
+											<Edit className="h-4 w-4" />
+											Edit
+										</DropdownMenuItem>
 
-									<DropdownMenuItem
-										onClick={handleDelete}
-										className="flex items-center gap-2 text-destructive"
-									>
-										<Trash2 className="h-4 w-4" />
-										Delete
-									</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
+										<DropdownMenuItem
+											onClick={handleDelete}
+											className="flex items-center gap-2 text-destructive"
+										>
+											<Trash2 className="h-4 w-4" />
+											Delete
+										</DropdownMenuItem>
+									</DropdownMenuContent>
+								</DropdownMenu>
+							</div>
 						</div>
+
+						{/* Description */}
+						{metadata?.description && (
+							<p className="text-sm text-muted-foreground line-clamp-2">
+								{metadata.description.body}
+							</p>
+						)}
+
+						{/* Assignees */}
+						{metadata?.assignees?.length > 0 && (
+							<div className="flex items-center gap-2">
+								{metadata.assignees.map((assignee) => (
+									<Avatar key={assignee.id} className="h-6 w-6">
+										<AvatarImage
+											src={assignee.image ?? undefined}
+											alt={assignee.name}
+										/>
+										<AvatarFallback className="text-xs bg-muted text-muted-foreground">
+											{assignee.name
+												.split(" ")
+												.map((n) => n[0])
+												.join("")}
+										</AvatarFallback>
+									</Avatar>
+								))}
+							</div>
+						)}
 					</div>
-
-					{/* Description */}
-					{metadata?.description && (
-						<p className="text-sm text-muted-foreground line-clamp-2">
-							{metadata.description.body}
-						</p>
-					)}
-
-					{/* Assignees */}
-					{metadata?.assignees?.length > 0 && (
-						<div className="flex items-center gap-2">
-							{metadata.assignees.map((assignee) => (
-								<Avatar key={assignee.id} className="h-6 w-6">
-									<AvatarImage
-										src={assignee.image ?? undefined}
-										alt={assignee.name}
-									/>
-									<AvatarFallback className="text-xs bg-muted text-muted-foreground">
-										{assignee.name
-											.split(" ")
-											.map((n) => n[0])
-											.join("")}
-									</AvatarFallback>
-								</Avatar>
-							))}
-						</div>
-					)}
-				</div>
-			</CardContent>
+				</CardContent>
+			</Card>
 
 			{/* Edit Dialog */}
 			<Dialog open={editOpen} onOpenChange={setEditOpen}>
@@ -341,6 +343,52 @@ export function TaskCard({
 					</form>
 				</DialogContent>
 			</Dialog>
-		</Card>
+		</>
+	)
+}
+
+interface SortableTaskCardProps {
+	task: Task
+	metadata: TaskMetadata
+	priorities: Priority[]
+	members: User[]
+}
+
+export function SortableTaskCard({
+	task,
+	metadata,
+	priorities,
+	members,
+}: SortableTaskCardProps) {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({
+		id: task.id,
+		data: {
+			type: "task",
+			task,
+		},
+	})
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+		opacity: isDragging ? 0.5 : 1,
+	}
+
+	return (
+		<div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+			<TaskCard
+				task={task}
+				metadata={metadata}
+				priorities={priorities}
+				members={members}
+			/>
+		</div>
 	)
 }

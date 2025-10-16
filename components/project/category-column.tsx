@@ -1,11 +1,18 @@
 "use client"
 
-import { MoreHorizontal } from "lucide-react"
+import {
+	SortableContext,
+	useSortable,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import type { User } from "better-auth"
+import { GripVertical, MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { deleteCategory, updateCategory } from "@/lib/actions/categories"
 import { createTask } from "@/lib/actions/tasks"
-import type { Category, Priority } from "@/lib/types"
+import type { Category, Priority, Task, TaskMetadata } from "@/lib/types"
 import { Button } from "../ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import {
@@ -24,26 +31,48 @@ import {
 } from "../ui/dropdown-menu"
 import { Input } from "../ui/input"
 import { AddTaskButton } from "./add-task"
+import { SortableTaskCard } from "./task-card"
 
 interface ColumnContainerProps {
 	category: Category
-	handleDragOver: (e: React.DragEvent) => void
-	handleDrop: (e: React.DragEvent, newCategoryId: string) => void
-	children: React.ReactNode
+	tasks: Task[]
 	projectId: string
 	priorities: Priority[]
+	metadatas: TaskMetadata[]
+	members: User[]
 }
 
 export function Column({
 	category,
-	children,
-	handleDragOver,
-	handleDrop,
+	tasks,
 	projectId,
 	priorities,
+	metadatas,
+	members,
 }: ColumnContainerProps) {
 	const [isEditOpen, setIsEditOpen] = useState(false)
 	const router = useRouter()
+
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({
+		id: category.id,
+		data: {
+			type: "category",
+			category,
+		},
+	})
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+		opacity: isDragging ? 0.5 : 1,
+	}
 
 	async function handleRename(formData: FormData) {
 		const name = formData.get("name") as string
@@ -60,12 +89,20 @@ export function Column({
 
 	return (
 		<Card
+			ref={setNodeRef}
+			style={style}
 			className="flex-shrink-0 w-80 bg-card border-border h-full"
-			onDragOver={handleDragOver}
-			onDrop={(e) => handleDrop(e, category.id)}
 		>
 			<CardHeader className="pb-4 flex items-center justify-between">
-				<div className="flex-1">
+				<div className="flex items-center gap-2 flex-1">
+					<button
+						type="button"
+						{...attributes}
+						{...listeners}
+						className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
+					>
+						<GripVertical className="h-4 w-4 text-muted-foreground" />
+					</button>
 					<CardTitle className="text-card-foreground">
 						{category.name}
 					</CardTitle>
@@ -86,7 +123,24 @@ export function Column({
 			</CardHeader>
 
 			<CardContent className="space-y-3">
-				{children}
+				<SortableContext
+					items={tasks.map((t) => t.id)}
+					strategy={verticalListSortingStrategy}
+				>
+					{tasks.map((task) => {
+						const metadata = metadatas.find((m) => m.task.id === task.id)
+						if (!metadata) return null
+						return (
+							<SortableTaskCard
+								key={task.id}
+								task={task}
+								metadata={metadata}
+								priorities={priorities}
+								members={members}
+							/>
+						)
+					})}
+				</SortableContext>
 				<AddTaskButton
 					projectId={projectId}
 					categoryId={category.id}

@@ -35,6 +35,7 @@ export const categories = pgTable("categories", {
 		.notNull()
 		.references(() => projects.id, { onDelete: "cascade" }),
 	name: text("name").notNull(),
+	order: text("order").notNull().default("0"),
 })
 
 export const priorities = pgTable("priorities", {

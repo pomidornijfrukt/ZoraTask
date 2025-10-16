@@ -70,3 +70,17 @@ export async function updateTaskCategory(taskId: string, categoryId: string) {
 
 	return { ok: true }
 }
+
+export async function updateTaskOrder(taskId: string, order: string) {
+	await db.update(tasks).set({ order }).where(eq(tasks.id, taskId))
+	return { ok: true }
+}
+
+export async function updateTasksOrder(
+	updates: { id: string; order: string }[],
+) {
+	for (const { id, order } of updates) {
+		await db.update(tasks).set({ order }).where(eq(tasks.id, id))
+	}
+	return { ok: true }
+}

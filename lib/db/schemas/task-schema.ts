@@ -52,6 +52,7 @@ export const tasks = pgTable("tasks", {
 	}),
 	name: text("name").notNull(),
 	executionStatus: text("execution_status"),
+	order: text("order").notNull().default("0"),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 	updatedAt: timestamp("updated_at")
 		.defaultNow()

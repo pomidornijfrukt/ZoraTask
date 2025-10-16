@@ -13,9 +13,11 @@ export const createTask = async (taskData: {
 	categoryId: string
 	priorityId: string
 	projectId: string
+	assignees?: string[]
 }) => {
 	const reporterId = await getSessionUserId()
-	const { name, description, categoryId, priorityId, projectId } = taskData
+	const { name, description, categoryId, priorityId, projectId, assignees } =
+		taskData
 
 	// 1) Create task first
 	const [task] = await db
@@ -43,7 +45,19 @@ export const createTask = async (taskData: {
 		.returning()
 
 	// 3) Link the description comment on the task
-	await db.update(tasks).set({ descriptionId: desc.id }).where(eq(tasks.id, task.id))
+	await db
+		.update(tasks)
+		.set({ descriptionId: desc.id })
+		.where(eq(tasks.id, task.id))
+
+	// 4) Optionally insert assignees
+	if (assignees && assignees.length > 0) {
+		await db
+			.insert(taskAssignees)
+			.values(
+				assignees.map((userId) => ({ id: v7(), userId, taskId: task.id })),
+			)
+	}
 
 	return task
 }
@@ -61,13 +75,20 @@ export const updateTask = async (
 	updatedData: UpdateTaskInput,
 ) => {
 	// Fetch current task to know descriptionId
-	const [existing] = await db.select().from(tasks).where(eq(tasks.id, taskId)).limit(1)
+	const [existing] = await db
+		.select()
+		.from(tasks)
+		.where(eq(tasks.id, taskId))
+		.limit(1)
 	if (!existing) return
 
 	const toUpdateTask: Partial<Task> = {}
-	if (typeof updatedData.name !== "undefined") toUpdateTask.name = updatedData.name ?? existing.name
-	if (typeof updatedData.priorityId !== "undefined") toUpdateTask.priorityId = updatedData.priorityId
-	if (typeof updatedData.categoryId !== "undefined") toUpdateTask.categoryId = updatedData.categoryId
+	if (typeof updatedData.name !== "undefined")
+		toUpdateTask.name = updatedData.name ?? existing.name
+	if (typeof updatedData.priorityId !== "undefined")
+		toUpdateTask.priorityId = updatedData.priorityId
+	if (typeof updatedData.categoryId !== "undefined")
+		toUpdateTask.categoryId = updatedData.categoryId
 
 	if (Object.keys(toUpdateTask).length > 0) {
 		await db.update(tasks).set(toUpdateTask).where(eq(tasks.id, taskId))
@@ -84,9 +105,18 @@ export const updateTask = async (
 		} else {
 			const [newDesc] = await db
 				.insert(comments)
-				.values({ id: v7(), taskId, body: updatedData.description ?? "", authorId: userId, parentId: null })
+				.values({
+					id: v7(),
+					taskId,
+					body: updatedData.description ?? "",
+					authorId: userId,
+					parentId: null,
+				})
 				.returning()
-			await db.update(tasks).set({ descriptionId: newDesc.id }).where(eq(tasks.id, taskId))
+			await db
+				.update(tasks)
+				.set({ descriptionId: newDesc.id })
+				.where(eq(tasks.id, taskId))
 		}
 	}
 
@@ -96,9 +126,11 @@ export const updateTask = async (
 		await db.delete(taskAssignees).where(eq(taskAssignees.taskId, taskId))
 		// Insert new set
 		if (updatedData.assignees.length > 0) {
-			await db.insert(taskAssignees).values(
-				updatedData.assignees.map((userId) => ({ id: v7(), userId, taskId })),
-			)
+			await db
+				.insert(taskAssignees)
+				.values(
+					updatedData.assignees.map((userId) => ({ id: v7(), userId, taskId })),
+				)
 		}
 	}
 }

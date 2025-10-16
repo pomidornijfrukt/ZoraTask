@@ -1,6 +1,7 @@
 "use client"
 
 import type { User } from "better-auth"
+import { formatDistanceToNow } from "date-fns"
 import { Edit, MessageSquare, MoreHorizontal, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type React from "react"
@@ -212,10 +213,10 @@ export function TaskCard({
 						</p>
 					)}
 
-					{/* Assignees */}
-					{metadata?.assignees?.length > 0 && (
-						<div className="flex items-center gap-2">
-							{metadata.assignees.map((assignee) => (
+					{/* Assignees + Created timestamp */}
+					<div className="flex items-center gap-2">
+						{metadata?.assignees?.length > 0 &&
+							metadata.assignees.map((assignee) => (
 								<Avatar key={assignee.id} className="h-6 w-6">
 									<AvatarImage
 										src={assignee.image ?? undefined}
@@ -229,8 +230,14 @@ export function TaskCard({
 									</AvatarFallback>
 								</Avatar>
 							))}
-						</div>
-					)}
+
+						<span className="text-xs text-muted-foreground">
+							Created{" "}
+							{formatDistanceToNow(new Date(task?.createdAt ?? Date.now()), {
+								addSuffix: true,
+							})}
+						</span>
+					</div>
 				</div>
 			</CardContent>
 

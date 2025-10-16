@@ -1,5 +1,6 @@
 "use client"
 
+import type { User } from "better-auth"
 import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -29,12 +30,14 @@ interface AddTaskButtonProps {
 	projectId: string
 	categoryId: string
 	priorities: Priority[]
+	members: User[]
 	createTask: (data: {
 		name: string
 		description: string
 		categoryId: string
 		priorityId: string
 		projectId: string
+		assignees?: string[]
 	}) => Promise<Task>
 }
 
@@ -42,6 +45,7 @@ export function AddTaskButton({
 	projectId,
 	categoryId,
 	priorities,
+	members,
 	createTask,
 }: AddTaskButtonProps) {
 	const router = useRouter()
@@ -51,6 +55,7 @@ export function AddTaskButton({
 		const name = formData.get("name") as string
 		const description = formData.get("description") as string
 		const priorityId = formData.get("priorityId") as string
+		const assignees = (formData.getAll("assignees") as string[]) || []
 
 		if (!name) {
 			alert("Task name is required")
@@ -63,6 +68,7 @@ export function AddTaskButton({
 			categoryId,
 			priorityId,
 			projectId,
+			assignees,
 		})
 
 		setOpen(false)
@@ -135,6 +141,31 @@ export function AddTaskButton({
 							placeholder="Short task description (optional)"
 							rows={4}
 						/>
+					</div>
+
+					<div>
+						<label
+							htmlFor="assignees"
+							className="block text-sm font-medium text-muted-foreground"
+						>
+							Assignees
+						</label>
+						<div className="mt-2 space-y-2 max-h-40 overflow-auto">
+							{members.map((u) => (
+								<label
+									key={u.id}
+									className="flex items-center gap-2 text-sm cursor-pointer select-none"
+								>
+									<input
+										type="checkbox"
+										name="assignees"
+										value={u.id}
+										className="h-4 w-4 rounded border"
+									/>
+									<span>{u.name}</span>
+								</label>
+							))}
+						</div>
 					</div>
 
 					<DialogFooter>

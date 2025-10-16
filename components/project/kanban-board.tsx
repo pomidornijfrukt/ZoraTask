@@ -77,6 +77,7 @@ export function KanbanBoard({
 						projectId={project.id}
 						category={category}
 						priorities={priorities}
+						members={members}
 						handleDragOver={handleDragOver}
 						handleDrop={handleDrop}
 					>

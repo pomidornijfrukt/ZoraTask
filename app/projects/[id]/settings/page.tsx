@@ -47,10 +47,7 @@ export default async function ProjectSettingsPage({
 		<div className="container mx-auto py-10">
 			<div className="flex items-center gap-4 mb-8">
 				<Button variant="ghost" size="sm" asChild={true}>
-					<Link
-						href={`/projects/${id}`}
-						className="flex items-center gap-2"
-					>
+					<Link href={`/projects/${id}`} className="flex items-center gap-2">
 						<ArrowLeft className="h-4 w-4" />
 						Back to Project
 					</Link>

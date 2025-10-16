@@ -1,3 +1,4 @@
+// header.tsx
 "use client"
 
 import {
@@ -6,24 +7,35 @@ import {
 	UserAvatar,
 	UserButton,
 } from "@daveyplate/better-auth-ui"
-import { FolderOpen, Home, Kanban, type LucideIcon } from "lucide-react"
+import { Bell, FolderOpen, Home, Kanban, type LucideIcon } from "lucide-react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
+import { getUserPendingInvitesCount } from "@/app/actions/invites"
 import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth/auth-client"
 import { ThemeToggle } from "./theme-toggle"
 
 export function Header() {
 	const pathname = usePathname()
-
-	// Access session data using Better Auth's useSession hook
 	const { data: session, isPending } = authClient.useSession()
-
-	// Determine if the user is signed in
 	const isSignedIn = !isPending && session?.user
-
-	// Access active organization using Better Auth's useActiveOrganization hook
 	const { data: activeOrg } = authClient.useActiveOrganization()
+	const [invitesCount, setInvitesCount] = useState(0)
+
+	// Fetch pending invites count
+	useEffect(() => {
+		async function fetchInvitesCount() {
+			if (session?.user?.email) {
+				const result = await getUserPendingInvitesCount()
+				if (result.success) {
+					setInvitesCount(result.count ?? 0)
+				}
+			}
+		}
+
+		fetchInvitesCount()
+	}, [session?.user?.email])
 
 	return (
 		<header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 border-b bg-card">
@@ -70,14 +82,28 @@ export function Header() {
 				<ThemeToggle />
 				{/* Auth buttons */}
 				{isSignedIn ? (
-					<UserButton
-						size="icon"
-						trigger={
-							<button type="button">
-								<UserAvatar user={session?.user} />
-							</button>
-						}
-					/>
+					<div className="flex items-center space-x-2">
+						{/* Inbox button with notification badge */}
+						<Button variant="outline" size="icon" asChild className="relative">
+							<Link href="/inbox">
+								<Bell className="h-4 w-4" />
+								{invitesCount > 0 && (
+									<span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+										{invitesCount}
+									</span>
+								)}
+							</Link>
+						</Button>
+						{/* User dropdown */}
+						<UserButton
+							size="icon"
+							trigger={
+								<button type="button">
+									<UserAvatar user={session?.user} />
+								</button>
+							}
+						/>
+					</div>
 				) : (
 					<Button variant="outline" asChild>
 						<Link href="/auth/sign-in">Sign in</Link>

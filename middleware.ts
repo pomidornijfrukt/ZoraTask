@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
 	}
 
 	// If user is not authenticated and trying to access protected routes, redirect to sign-in
-	if (!session) {
+	if (!session && !pathname.startsWith("/auth/")) {
 		return NextResponse.redirect(new URL("/auth/sign-in", request.url))
 	}
 

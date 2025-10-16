@@ -51,7 +51,8 @@ export default async function BoardPage({
 								{project.name} - Board
 							</h1>
 							<p className="text-muted-foreground">
-								Drag and drop tasks to update their status
+								Drag and drop columns to reorder, drag tasks to move between
+								columns or reorder within a column
 							</p>
 						</div>
 					</div>

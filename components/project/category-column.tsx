@@ -1,5 +1,6 @@
 "use client"
 
+import { useDroppable } from "@dnd-kit/core"
 import {
 	SortableContext,
 	useSortable,
@@ -56,11 +57,19 @@ export function Column({
 	const {
 		attributes,
 		listeners,
-		setNodeRef,
+		setNodeRef: setSortableRef,
 		transform,
 		transition,
 		isDragging,
 	} = useSortable({
+		id: category.id,
+		data: {
+			type: "category",
+			category,
+		},
+	})
+
+	const { setNodeRef: setDroppableRef } = useDroppable({
 		id: category.id,
 		data: {
 			type: "category",
@@ -89,7 +98,10 @@ export function Column({
 
 	return (
 		<Card
-			ref={setNodeRef}
+			ref={(node) => {
+				setSortableRef(node)
+				setDroppableRef(node)
+			}}
 			style={style}
 			className="flex-shrink-0 w-80 bg-card border-border h-full"
 		>

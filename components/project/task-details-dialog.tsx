@@ -95,7 +95,7 @@ export function TaskDetailsDialog({
 									? {
 											id: currentUser.id,
 											name: currentUser.name,
-											image: currentUser.image,
+											image: currentUser.image ?? null,
 										}
 									: undefined
 							}

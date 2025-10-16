@@ -153,12 +153,15 @@ export function TaskCard({
 			<CardContent className="p-4">
 				<div className="space-y-3">
 					{/* Header */}
-					<div className="flex items-start justify-between gap-2">
-						<h4 className="font-medium text-foreground text-sm leading-tight">
+					<div className="flex items-start justify-between gap-2 min-w-0">
+						<h4
+							className="flex-1 min-w-0 font-medium text-foreground text-sm leading-tight truncate"
+							title={task.name}
+						>
 							{task.name}
 						</h4>
 
-						<div className="flex items-center gap-2">
+						<div className="flex items-center gap-2 flex-shrink-0">
 							{metadata?.priority && (
 								<span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
 									{metadata.priority?.name}

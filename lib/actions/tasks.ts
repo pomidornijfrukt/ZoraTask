@@ -169,7 +169,7 @@ export async function createTaskForm(
 	const name = formData.get("name") as string
 	const description = formData.get("description") as string
 	const priorityId = formData.get("priorityId") as string
-
+	const assignees = formData.getAll("assignees") as string[]
 	if (!name) throw new Error("Task name required")
 
 	const task = await createTask({
@@ -178,6 +178,7 @@ export async function createTaskForm(
 		priorityId,
 		categoryId,
 		projectId,
+		assignees,
 	})
 
 	revalidatePath(`/projects/${projectId}/board`)

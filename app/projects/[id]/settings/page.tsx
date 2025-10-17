@@ -21,6 +21,7 @@ import {
 	removeProjectMember,
 	updateProject,
 } from "@/lib/actions/projects"
+import { auth } from "@/lib/auth"
 import { getPrioritiesByProject, getProjectMembers } from "@/lib/data/projects"
 
 export default async function ProjectSettingsPage({

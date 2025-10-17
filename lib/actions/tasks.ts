@@ -1,6 +1,7 @@
 "use server"
 
 import { and, eq, isNull } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
 import { v7 } from "uuid"
 import { db } from "@/lib/db"
 import { comments, taskAssignees, tasks } from "../db/schemas"
@@ -158,4 +159,27 @@ export async function updateTaskCategory(taskId: string, categoryId: string) {
 	await db.update(tasks).set({ categoryId }).where(eq(tasks.id, taskId))
 
 	return { ok: true }
+}
+
+export async function createTaskForm(
+	formData: FormData,
+	projectId: string,
+	categoryId: string,
+) {
+	const name = formData.get("name") as string
+	const description = formData.get("description") as string
+	const priorityId = formData.get("priorityId") as string
+
+	if (!name) throw new Error("Task name required")
+
+	const task = await createTask({
+		name,
+		description,
+		priorityId,
+		categoryId,
+		projectId,
+	})
+
+	revalidatePath(`/projects/${projectId}/board`)
+	return task
 }

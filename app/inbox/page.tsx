@@ -32,7 +32,7 @@ export default function InboxPage() {
 						expiresAt: Date
 					}) => ({
 						...invite,
-						roleName: invite.roleName ?? "Memeber",
+						roleName: invite.roleName ?? "Member",
 					}),
 				),
 			)

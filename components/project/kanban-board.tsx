@@ -38,8 +38,13 @@ export function KanbanBoard({
 	members,
 	currentUser,
 }: KanbanBoardProps) {
-	const { tasks, handleDragStart, handleDragOver, handleDrop } =
-		useDragAndDrop(initialTasks)
+	const {
+		tasks,
+		handleCreateTask,
+		handleDragStart,
+		handleDragOver,
+		handleDrop,
+	} = useDragAndDrop(initialTasks)
 
 	const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
 	const [detailsOpen, setDetailsOpen] = useState(false)
@@ -80,6 +85,7 @@ export function KanbanBoard({
 						members={members}
 						handleDragOver={handleDragOver}
 						handleDrop={handleDrop}
+						handleCreateTask={handleCreateTask}
 					>
 						{columnTasks.map((task) => {
 							const metadata = metadatas.find((m) => m.task.id === task.id)

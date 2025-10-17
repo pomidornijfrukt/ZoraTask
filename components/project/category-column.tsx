@@ -1,5 +1,6 @@
 "use client"
 
+import type { User } from "better-auth"
 import { MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -23,7 +24,6 @@ import {
 } from "../ui/dropdown-menu"
 import { Input } from "../ui/input"
 import { AddTaskButton } from "./add-task"
-import { User } from "better-auth"
 
 interface ColumnContainerProps {
 	category: Category

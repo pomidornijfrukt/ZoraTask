@@ -1,5 +1,6 @@
 "use client"
 
+import type { User } from "better-auth"
 import { Plus } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -24,12 +25,11 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { createTaskForm } from "@/lib/actions/tasks"
 import type { Priority, Task } from "@/lib/types"
-import { User } from "better-auth"
 
 export function AddTaskButton({
 	projectId,
 	categoryId,
-	priorities,	
+	priorities,
 	members,
 	handleCreateTask,
 }: {
@@ -114,6 +114,31 @@ export function AddTaskButton({
 							placeholder="Short task description (optional)"
 							rows={4}
 						/>
+					</div>
+
+					<div>
+						<label
+							htmlFor="assignees"
+							className="block text-sm font-medium text-muted-foreground"
+						>
+							Assignees
+						</label>
+						<div className="mt-2 space-y-2 max-h-40 overflow-auto">
+							{members.map((u) => (
+								<label
+									key={u.id}
+									className="flex items-center gap-2 text-sm cursor-pointer select-none"
+								>
+									<input
+										type="checkbox"
+										name="assignees"
+										value={u.id}
+										className="h-4 w-4 rounded border"
+									/>
+									<span>{u.name}</span>
+								</label>
+							))}
+						</div>
 					</div>
 
 					<DialogFooter>

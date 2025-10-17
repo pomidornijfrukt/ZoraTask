@@ -32,8 +32,13 @@ export function KanbanBoard({
 	metadatas,
 	members,
 }: KanbanBoardProps) {
-	const { tasks, handleDragStart, handleDragOver, handleDrop } =
-		useDragAndDrop(initialTasks)
+	const {
+		tasks,
+		handleCreateTask,
+		handleDragStart,
+		handleDragOver,
+		handleDrop,
+	} = useDragAndDrop(initialTasks)
 
 	return (
 		<div className="flex gap-6 overflow-x-auto pb-4">
@@ -49,6 +54,7 @@ export function KanbanBoard({
 						priorities={priorities}
 						handleDragOver={handleDragOver}
 						handleDrop={handleDrop}
+						handleCreateTask={handleCreateTask}
 					>
 						{columnTasks.map((task) => {
 							const metadata = metadatas.find((m) => m.task.id === task.id)

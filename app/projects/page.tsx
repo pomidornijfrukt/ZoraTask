@@ -21,7 +21,7 @@ export default async function ProjectsPage() {
 	})
 	if (!session?.user) throw new Error("Unauthorized")
 	const projects = await getProjects(session.user.id)
-	const organizations = await await auth.api.listOrganizations({
+	const organizations = await auth.api.listOrganizations({
 		headers: await headers(),
 	})
 

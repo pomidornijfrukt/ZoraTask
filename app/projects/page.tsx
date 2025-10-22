@@ -14,7 +14,6 @@ import {
 import { createProject } from "@/lib/actions/projects"
 import { auth } from "@/lib/auth"
 import { getProjectMembers, getProjects } from "@/lib/data/projects"
-import { getTasksByProject } from "@/lib/data/task"
 
 export default async function ProjectsPage() {
 	const session = await auth.api.getSession({
@@ -25,19 +24,6 @@ export default async function ProjectsPage() {
 	const organizations = await await auth.api.listOrganizations({
 		headers: await headers(),
 	})
-
-	const getProjectStats = async (projectId: string) => {
-		const tasks = await getTasksByProject(projectId)
-		const completed = tasks.filter(
-			(task) => task.executionStatus === "done",
-		).length
-		const inProgress = tasks.filter(
-			(task) => task.executionStatus === "in-progress",
-		).length
-		const todo = tasks.filter((task) => task.executionStatus === "todo").length
-
-		return { total: tasks.length, completed, inProgress, todo }
-	}
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -59,12 +45,6 @@ export default async function ProjectsPage() {
 
 				<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 					{projects.map(async (project) => {
-						const stats = await getProjectStats(project.id)
-						const completionRate =
-							stats.total > 0
-								? Math.round((stats.completed / stats.total) * 100)
-								: 0
-
 						const members = await getProjectMembers(project.id)
 
 						return (
@@ -75,11 +55,11 @@ export default async function ProjectsPage() {
 								<CardHeader>
 									<div className="flex items-start justify-between">
 										<div className="flex-1">
-											<CardTitle className="text-card-foreground mb-2">
+											<CardTitle className="text-card-foreground mb-2 truncate max-w-sm">
 												{project.name}
 											</CardTitle>
-											<CardDescription className="text-sm">
-												{project.description}
+											<CardDescription className="text-sm line-clamp-2">
+												{project.description || "No description provided."}
 											</CardDescription>
 										</div>
 									</div>
@@ -87,50 +67,6 @@ export default async function ProjectsPage() {
 
 								<CardContent>
 									<div className="space-y-4">
-										{/* Progress Bar */}
-										<div>
-											<div className="flex items-center justify-between text-sm mb-2">
-												<span className="text-muted-foreground">Progress</span>
-												<span className="text-card-foreground font-medium">
-													{completionRate}%
-												</span>
-											</div>
-											<div className="w-full bg-muted rounded-full h-2">
-												<div
-													className="bg-primary h-2 rounded-full transition-all duration-300"
-													style={{ width: `${completionRate}%` }}
-												/>
-											</div>
-										</div>
-
-										{/* Task Stats */}
-										<div className="grid grid-cols-3 gap-2 text-center">
-											<div className="bg-muted/50 rounded-lg p-2">
-												<div className="text-lg font-semibold text-card-foreground">
-													{stats.todo}
-												</div>
-												<div className="text-xs text-muted-foreground">
-													To Do
-												</div>
-											</div>
-											<div className="bg-yellow-500/10 rounded-lg p-2">
-												<div className="text-lg font-semibold text-yellow-500">
-													{stats.inProgress}
-												</div>
-												<div className="text-xs text-muted-foreground">
-													In Progress
-												</div>
-											</div>
-											<div className="bg-green-500/10 rounded-lg p-2">
-												<div className="text-lg font-semibold text-green-500">
-													{stats.completed}
-												</div>
-												<div className="text-xs text-muted-foreground">
-													Done
-												</div>
-											</div>
-										</div>
-
 										{/* Team Members */}
 										<div>
 											<div className="flex items-center gap-2 mb-2">

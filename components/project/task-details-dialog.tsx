@@ -1,6 +1,7 @@
 "use client"
 
 import type { User } from "better-auth"
+import { useMemo } from "react"
 import { CommentsList } from "@/components/comments"
 import {
 	Dialog,
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/dialog"
 import type { CommentWithAuthor } from "@/lib/data/comments"
 import type { Task, TaskMetadata } from "@/lib/types"
-import { useMemo } from "react"
 
 interface TaskDetailsDialogProps {
 	task: Task

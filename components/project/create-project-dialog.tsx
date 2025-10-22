@@ -85,7 +85,12 @@ export default function CreateProjectDialog({
 						>
 							Name
 						</label>
-						<Input name="name" placeholder="Project name" required />
+						<Input
+							name="name"
+							placeholder="Project name"
+							maxLength={64}
+							required
+						/>
 					</div>
 
 					<div>
@@ -98,6 +103,7 @@ export default function CreateProjectDialog({
 						<Textarea
 							name="description"
 							placeholder="Short project description"
+							maxLength={100}
 							rows={3}
 						/>
 					</div>

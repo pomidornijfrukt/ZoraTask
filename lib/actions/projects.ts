@@ -13,6 +13,17 @@ export async function createProject(payload: {
 }) {
 	const userId = await getSessionUserId()
 
+	// Validation
+	if (!payload.name || payload.name.trim().length === 0) {
+		throw new Error("Project name is required")
+	}
+	if (payload.name.length > 64) {
+		throw new Error("Project name must be less than 64 characters")
+	}
+	if (payload.description.length > 100) {
+		throw new Error("Project description must be less than 100 characters")
+	}
+
 	const newId = v7()
 
 	const [created] = await db

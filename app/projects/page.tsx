@@ -55,10 +55,10 @@ export default async function ProjectsPage() {
 								<CardHeader>
 									<div className="flex items-start justify-between">
 										<div className="flex-1">
-											<CardTitle className="text-card-foreground mb-2">
+											<CardTitle className="text-card-foreground mb-2 truncate max-w-sm">
 												{project.name}
 											</CardTitle>
-											<CardDescription className="text-sm">
+											<CardDescription className="text-sm line-clamp-2">
 												{project.description || "No description provided."}
 											</CardDescription>
 										</div>

@@ -1,7 +1,8 @@
 "use client"
 
 import type { User } from "better-auth"
-import { Edit, MoreHorizontal, Trash2 } from "lucide-react"
+import { formatDistanceToNow } from "date-fns"
+import { Edit, MessageSquare, MoreHorizontal, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type React from "react"
 import { useEffect, useMemo, useState } from "react"
@@ -42,6 +43,7 @@ interface TaskCardProps {
 	isLoading?: boolean
 	priorities: Priority[]
 	members: User[]
+	onViewDetails?: (taskId: string) => void
 }
 
 export function TaskCard({
@@ -51,6 +53,7 @@ export function TaskCard({
 	isLoading = false,
 	priorities,
 	members,
+	onViewDetails,
 }: TaskCardProps) {
 	const [editOpen, setEditOpen] = useState(false)
 	const [submitting, setSubmitting] = useState(false)
@@ -150,12 +153,15 @@ export function TaskCard({
 			<CardContent className="p-4">
 				<div className="space-y-3">
 					{/* Header */}
-					<div className="flex items-start justify-between gap-2">
-						<h4 className="font-medium text-foreground text-sm leading-tight">
+					<div className="flex items-start justify-between gap-2 min-w-0">
+						<h4
+							className="flex-1 min-w-0 font-medium text-foreground text-sm leading-tight truncate"
+							title={task.name}
+						>
 							{task.name}
 						</h4>
 
-						<div className="flex items-center gap-2">
+						<div className="flex items-center gap-2 flex-shrink-0">
 							{metadata?.priority && (
 								<span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
 									{metadata.priority?.name}
@@ -171,6 +177,16 @@ export function TaskCard({
 								</DropdownMenuTrigger>
 
 								<DropdownMenuContent align="end">
+									<DropdownMenuItem
+										onClick={() => {
+											onViewDetails?.(task.id)
+										}}
+										className="flex items-center gap-2"
+									>
+										<MessageSquare className="h-4 w-4" />
+										View Details & Comments
+									</DropdownMenuItem>
+
 									<DropdownMenuItem
 										onClick={() => {
 											setEditOpen(true)
@@ -200,10 +216,10 @@ export function TaskCard({
 						</p>
 					)}
 
-					{/* Assignees */}
-					{metadata?.assignees?.length > 0 && (
-						<div className="flex items-center gap-2">
-							{metadata.assignees.map((assignee) => (
+					{/* Assignees + Created timestamp */}
+					<div className="flex items-center gap-2">
+						{metadata?.assignees?.length > 0 &&
+							metadata.assignees.map((assignee) => (
 								<Avatar key={assignee.id} className="h-6 w-6">
 									<AvatarImage
 										src={assignee.image ?? undefined}
@@ -217,8 +233,14 @@ export function TaskCard({
 									</AvatarFallback>
 								</Avatar>
 							))}
-						</div>
-					)}
+
+						<span className="text-xs text-muted-foreground">
+							Created{" "}
+							{formatDistanceToNow(new Date(task?.createdAt ?? Date.now()), {
+								addSuffix: true,
+							})}
+						</span>
+					</div>
 				</div>
 			</CardContent>
 

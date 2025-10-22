@@ -13,6 +13,17 @@ export async function createProject(payload: {
 }) {
 	const userId = await getSessionUserId()
 
+	// Validation
+	if (!payload.name || payload.name.trim().length === 0) {
+		throw new Error("Project name is required")
+	}
+	if (payload.name.length > 64) {
+		throw new Error("Project name must be less than 64 characters")
+	}
+	if (payload.description.length > 100) {
+		throw new Error("Project description must be less than 100 characters")
+	}
+
 	const newId = v7()
 
 	const [created] = await db
@@ -108,19 +119,21 @@ export async function deleteProject(projectId: string) {
 export async function addProjectMember(projectId: string, memberId: string) {
 	checkIfOwner(projectId)
 
-	const membershipId = v7()
-	await db.insert(projectMemberships).values({
-		id: membershipId,
-		memberId,
-		projectId,
-	})
-
-	return {
-		id: membershipId,
-		memberId,
-		projectId,
-		joinedAt: new Date(),
-	}
+	const [memberExists] = await db
+		.select()
+		.from(projectMemberships)
+		.where(
+			and(
+				eq(projectMemberships.projectId, projectId),
+				eq(projectMemberships.memberId, memberId),
+			),
+		)
+	if (!memberExists)
+		await db.insert(projectMemberships).values({
+			id: v7(),
+			memberId,
+			projectId,
+		})
 }
 
 export async function removeProjectMember(projectId: string, memberId: string) {

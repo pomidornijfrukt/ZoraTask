@@ -6,7 +6,7 @@ export const updateProfileSchema = z.object({
 	bio: z.string().max(1000).optional().nullable(),
 	phoneNumber: z
 		.string()
-		.max(32, "Phone number too long")
+		.max(16, "Phone number too long")
 		.optional()
 		.nullable()
 		.transform((val) => (val === "" ? null : val)),
@@ -17,7 +17,23 @@ export const updateProfileSchema = z.object({
 		.optional()
 		.nullable()
 		.or(z.literal("")),
-	birthDate: z.string().optional().nullable(),
+	birthDate: z
+		.string()
+		.optional()
+		.nullable()
+		.refine(
+			(val) => {
+				// allow empty/null
+				if (!val) return true
+				const date = new Date(val)
+				if (Number.isNaN(date.getTime())) return false
+				const today = new Date()
+				today.setHours(0, 0, 0, 0)
+				date.setHours(0, 0, 0, 0)
+				return date <= today
+			},
+			{ message: "Birth date cannot be in the future" },
+		),
 })
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>

@@ -1,11 +1,14 @@
+import type { User } from "better-auth"
 import { ArrowLeft } from "lucide-react"
 import { revalidatePath } from "next/cache"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import AddMemberSelect from "@/components/project/add-member-select"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { getOrganizationMembers } from "@/lib/actions/organizations"
 import {
 	createPriority,
 	deletePriority,
@@ -23,33 +26,35 @@ import { getPrioritiesByProject, getProjectMembers } from "@/lib/data/projects"
 export default async function ProjectSettingsPage({
 	params,
 }: {
-	params: { id: string }
+	params: Promise<{ id: string }>
 }) {
-	const project = await getProjectById(params.id)
+	const { id } = await params
+	const project = await getProjectById(id)
 	if (!project) redirect("/projects")
 
 	async function handleUpdate(formData: FormData) {
 		"use server"
 		const name = formData.get("name") as string
 		const description = formData.get("description") as string
-		await updateProject(params.id, { name, description })
-		revalidatePath(`/projects/${params.id}/settings`)
+		await updateProject(id, { name, description })
+		revalidatePath(`/projects/${id}/settings`)
 	}
 
 	async function handleDelete() {
 		"use server"
-		await deleteProject(params.id)
+		await deleteProject(id)
 		redirect("/projects")
 	}
+
+	const organizationMembers = await getOrganizationMembers(
+		project.organizationId,
+	)
 
 	return (
 		<div className="container mx-auto py-10">
 			<div className="flex items-center gap-4 mb-8">
 				<Button variant="ghost" size="sm" asChild={true}>
-					<Link
-						href={`/projects/${params.id}`}
-						className="flex items-center gap-2"
-					>
+					<Link href={`/projects/${id}`} className="flex items-center gap-2">
 						<ArrowLeft className="h-4 w-4" />
 						Back to Project
 					</Link>
@@ -73,9 +78,12 @@ export default async function ProjectSettingsPage({
 						<Button type="submit">Save Changes</Button>
 					</form>
 
-					<MembersSection projectId={params.id} />
+					<MembersSection
+						projectId={id}
+						organizationMembers={organizationMembers}
+					/>
 
-					<PrioritySection projectId={params.id} />
+					<PrioritySection projectId={id} />
 
 					<div className="border-t pt-6 mt-6">
 						<h3 className="text-lg font-semibold text-red-600">Danger Zone</h3>
@@ -91,7 +99,13 @@ export default async function ProjectSettingsPage({
 	)
 }
 
-async function MembersSection({ projectId }: { projectId: string }) {
+async function MembersSection({
+	projectId,
+	organizationMembers,
+}: {
+	projectId: string
+	organizationMembers: User[]
+}) {
 	const members = await getProjectMembers(projectId)
 
 	async function handleAddMember(formData: FormData) {
@@ -126,7 +140,7 @@ async function MembersSection({ projectId }: { projectId: string }) {
 			</ul>
 
 			<form action={handleAddMember} className="flex gap-2 mt-4">
-				<Input name="memberId" placeholder="Enter user ID..." />
+				<AddMemberSelect organizationMembers={organizationMembers} />
 				<Button type="submit">Add Member</Button>
 			</form>
 		</div>

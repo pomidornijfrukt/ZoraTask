@@ -1,11 +1,11 @@
 "use client"
 
+import type { User } from "better-auth"
 import { MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { deleteCategory, updateCategory } from "@/lib/actions/categories"
-import { createTask } from "@/lib/actions/tasks"
-import type { Category, Priority } from "@/lib/types"
+import type { Category, Priority, Task } from "@/lib/types"
 import { Button } from "../ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import {
@@ -32,6 +32,8 @@ interface ColumnContainerProps {
 	children: React.ReactNode
 	projectId: string
 	priorities: Priority[]
+	handleCreateTask: (newTask: Task) => void
+	members: User[]
 }
 
 export function Column({
@@ -41,6 +43,8 @@ export function Column({
 	handleDrop,
 	projectId,
 	priorities,
+	handleCreateTask,
+	members,
 }: ColumnContainerProps) {
 	const [isEditOpen, setIsEditOpen] = useState(false)
 	const router = useRouter()
@@ -91,7 +95,8 @@ export function Column({
 					projectId={projectId}
 					categoryId={category.id}
 					priorities={priorities}
-					createTask={createTask}
+					handleCreateTask={handleCreateTask}
+					members={members}
 				/>
 			</CardContent>
 

@@ -6,7 +6,6 @@ import { db } from "@/lib/db"
 import { userProfile } from "@/lib/db/schemas/user-schema"
 
 export async function GET() {
-	"use cache"
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),

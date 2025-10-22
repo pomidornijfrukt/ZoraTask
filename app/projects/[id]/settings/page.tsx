@@ -20,7 +20,7 @@ import {
 	removeProjectMember,
 	updateProject,
 } from "@/lib/actions/projects"
-import { auth } from "@/lib/auth"
+import { getOrganizationMembers } from "@/lib/actions/utils"
 import { getPrioritiesByProject, getProjectMembers } from "@/lib/data/projects"
 
 export default async function ProjectSettingsPage({
@@ -46,10 +46,10 @@ export default async function ProjectSettingsPage({
 		redirect("/projects")
 	}
 
-	// const organizationMembers = await auth.api.listMembers({
-	// 	query: { organizationId: project.organizationId },
-	// })
-	const organizationMembers = [{} as User]
+	const organizationMembers = await getOrganizationMembers(
+		project.organizationId,
+	)
+
 	return (
 		<div className="container mx-auto py-10">
 			<div className="flex items-center gap-4 mb-8">

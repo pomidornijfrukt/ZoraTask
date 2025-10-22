@@ -11,6 +11,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card"
+import { getOrganizations } from "@/lib/actions/organizations"
 import { createProject } from "@/lib/actions/projects"
 import { auth } from "@/lib/auth"
 import { getProjectMembers, getProjects } from "@/lib/data/projects"
@@ -21,9 +22,7 @@ export default async function ProjectsPage() {
 	})
 	if (!session?.user) throw new Error("Unauthorized")
 	const projects = await getProjects(session.user.id)
-	const organizations = await auth.api.listOrganizations({
-		headers: await headers(),
-	})
+	const organizations = await getOrganizations(session.user.id)
 
 	return (
 		<div className="min-h-screen bg-background">

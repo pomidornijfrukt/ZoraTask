@@ -1,6 +1,8 @@
 "use client"
 
+import { randomBytes } from "node:crypto"
 import type { User } from "better-auth"
+import Image from "next/image"
 import { type ComponentProps, useState } from "react"
 import { cn } from "@/lib/utils"
 import {
@@ -13,7 +15,7 @@ import {
 	SelectValue,
 } from "../ui/select"
 
-export default function MemberAddSelect({
+export default function AddMemberSelect({
 	organizationMembers,
 	className,
 }: {
@@ -23,9 +25,7 @@ export default function MemberAddSelect({
 
 	return (
 		<div className={cn("flex items-center gap-2", className)}>
-			<input type="hidden" name={"memberId"} value={value} />
-
-			<Select value={value} onValueChange={setValue}>
+			<Select name="memberId" value={value} onValueChange={setValue}>
 				<SelectTrigger aria-label="Choose member" className="min-w-[220px]">
 					<SelectValue placeholder={"Select a member..."} />
 				</SelectTrigger>
@@ -33,8 +33,17 @@ export default function MemberAddSelect({
 					<SelectGroup>
 						<SelectLabel>Organization members</SelectLabel>
 						{organizationMembers.map((m) => (
-							<SelectItem key={m.id} value={m.id}>
-								{m.name} {m.email ? `· ${m.email}` : ""}
+							<SelectItem key={m.id + randomBytes} value={m.id}>
+								{m.image && (
+									<Image
+										src={m.image}
+										alt={m.name}
+										width={24}
+										height={24}
+										className="rounded-full"
+									/>
+								)}
+								{m.name} {m.email}
 							</SelectItem>
 						))}
 					</SelectGroup>

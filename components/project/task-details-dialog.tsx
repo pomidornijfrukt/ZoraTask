@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import type { CommentWithAuthor } from "@/lib/data/comments"
 import type { Task, TaskMetadata } from "@/lib/types"
+import { useMemo } from "react"
 
 interface TaskDetailsDialogProps {
 	task: Task
@@ -29,6 +30,14 @@ export function TaskDetailsDialog({
 	open,
 	onOpenChange,
 }: TaskDetailsDialogProps) {
+	const sortedByCreated = useMemo(() => {
+		return [...comments].sort((a, b) => {
+			const aTime = new Date(a.createdAt as unknown as string).getTime()
+			const bTime = new Date(b.createdAt as unknown as string).getTime()
+			return aTime - bTime
+		})
+	}, [comments])
+
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
@@ -89,7 +98,7 @@ export function TaskDetailsDialog({
 					<div className="pt-6 border-t">
 						<CommentsList
 							taskId={task.id}
-							initialComments={comments}
+							initialComments={sortedByCreated}
 							currentUser={
 								currentUser
 									? {

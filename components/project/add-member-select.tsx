@@ -1,6 +1,5 @@
 "use client"
 
-import { randomBytes } from "node:crypto"
 import type { User } from "better-auth"
 import Image from "next/image"
 import { type ComponentProps, useState } from "react"
@@ -33,7 +32,7 @@ export default function AddMemberSelect({
 					<SelectGroup>
 						<SelectLabel>Organization members</SelectLabel>
 						{organizationMembers.map((m) => (
-							<SelectItem key={m.id + randomBytes} value={m.id}>
+							<SelectItem key={m.id} value={m.id}>
 								{m.image && (
 									<Image
 										src={m.image}

@@ -1,11 +1,4 @@
-import {
-	ArrowLeft,
-	BarChart3,
-	Calendar,
-	Kanban,
-	Settings,
-	Users,
-} from "lucide-react"
+import { ArrowLeft, Calendar, Kanban, Settings, Users } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -18,7 +11,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { getProject, getProjectMembers } from "@/lib/data/projects"
 import { getTaskMetadataById, getTasksByProject } from "@/lib/data/task"
 
@@ -37,15 +29,6 @@ export default async function ProjectPage({
 	const members = await getProjectMembers(id)
 
 	const tasks = await getTasksByProject(id)
-	const todoTasks = tasks.filter((task) => task.executionStatus === "todo")
-	const inProgressTasks = tasks.filter(
-		(task) => task.executionStatus === "in-progress",
-	)
-	const doneTasks = tasks.filter((task) => task.executionStatus === "done")
-
-	const completionRate =
-		tasks.length > 0 ? Math.round((doneTasks.length / tasks.length) * 100) : 0
-
 	return (
 		<div className="min-h-screen bg-background">
 			<div className="container mx-auto px-4 py-8">
@@ -100,54 +83,6 @@ export default async function ProjectPage({
 				<div className="grid lg:grid-cols-3 gap-8">
 					{/* Main Content */}
 					<div className="lg:col-span-2 space-y-6">
-						{/* Progress Overview */}
-						<Card className="bg-card border-border">
-							<CardHeader>
-								<CardTitle className="text-card-foreground flex items-center gap-2">
-									<BarChart3 className="h-5 w-5" />
-									Project Progress
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<div className="space-y-4">
-									<div>
-										<div className="flex items-center justify-between mb-2">
-											<span className="text-sm text-muted-foreground">
-												Overall Completion
-											</span>
-											<span className="text-sm font-medium text-card-foreground">
-												{completionRate}%
-											</span>
-										</div>
-										<Progress value={completionRate} className="h-2" />
-									</div>
-
-									<div className="grid grid-cols-3 gap-4">
-										<div className="text-center p-4 bg-muted/50 rounded-lg">
-											<div className="text-2xl font-bold text-card-foreground">
-												{todoTasks.length}
-											</div>
-											<div className="text-sm text-muted-foreground">To Do</div>
-										</div>
-										<div className="text-center p-4 bg-yellow-500/10 rounded-lg">
-											<div className="text-2xl font-bold text-yellow-500">
-												{inProgressTasks.length}
-											</div>
-											<div className="text-sm text-muted-foreground">
-												In Progress
-											</div>
-										</div>
-										<div className="text-center p-4 bg-green-500/10 rounded-lg">
-											<div className="text-2xl font-bold text-green-500">
-												{doneTasks.length}
-											</div>
-											<div className="text-sm text-muted-foreground">Done</div>
-										</div>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-
 						{/* Recent Tasks */}
 						<Card className="bg-card border-border">
 							<CardHeader>
@@ -275,13 +210,6 @@ export default async function ProjectPage({
 										<Kanban className="h-4 w-4 mr-2" />
 										Open Board
 									</Link>
-								</Button>
-								<Button
-									variant="outline"
-									className="w-full justify-start bg-transparent"
-								>
-									<BarChart3 className="h-4 w-4 mr-2" />
-									View Reports
 								</Button>
 								<Button
 									asChild

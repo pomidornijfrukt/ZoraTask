@@ -1,5 +1,6 @@
 "use client"
 
+import type { User } from "better-auth"
 import { MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -32,6 +33,7 @@ interface ColumnContainerProps {
 	projectId: string
 	priorities: Priority[]
 	handleCreateTask: (newTask: Task) => void
+	members: User[]
 }
 
 export function Column({
@@ -42,6 +44,7 @@ export function Column({
 	projectId,
 	priorities,
 	handleCreateTask,
+	members,
 }: ColumnContainerProps) {
 	const [isEditOpen, setIsEditOpen] = useState(false)
 	const router = useRouter()
@@ -93,6 +96,7 @@ export function Column({
 					categoryId={category.id}
 					priorities={priorities}
 					handleCreateTask={handleCreateTask}
+					members={members}
 				/>
 			</CardContent>
 

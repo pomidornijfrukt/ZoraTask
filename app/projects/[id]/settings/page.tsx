@@ -26,7 +26,7 @@ import { getPrioritiesByProject, getProjectMembers } from "@/lib/data/projects"
 export default async function ProjectSettingsPage({
 	params,
 }: {
-	params: { id: string }
+	params: Promise<{ id: string }>
 }) {
 	const { id } = await params
 	const project = await getProjectById(id)

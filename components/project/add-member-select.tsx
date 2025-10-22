@@ -1,5 +1,6 @@
 "use client"
 
+import { randomBytes } from "node:crypto"
 import type { User } from "better-auth"
 import Image from "next/image"
 import { type ComponentProps, useState } from "react"

@@ -1,11 +1,14 @@
+import type { User } from "better-auth"
 import { ArrowLeft } from "lucide-react"
 import { revalidatePath } from "next/cache"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import AddMemberSelect from "@/components/project/add-member-select"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { getOrganizationMembers } from "@/lib/actions/organizations"
 import {
 	createPriority,
 	deletePriority,
@@ -43,6 +46,10 @@ export default async function ProjectSettingsPage({
 		redirect("/projects")
 	}
 
+	const organizationMembers = await getOrganizationMembers(
+		project.organizationId,
+	)
+
 	return (
 		<div className="container mx-auto py-10">
 			<div className="flex items-center gap-4 mb-8">
@@ -71,7 +78,10 @@ export default async function ProjectSettingsPage({
 						<Button type="submit">Save Changes</Button>
 					</form>
 
-					<MembersSection projectId={id} />
+					<MembersSection
+						projectId={id}
+						organizationMembers={organizationMembers}
+					/>
 
 					<PrioritySection projectId={id} />
 
@@ -89,7 +99,13 @@ export default async function ProjectSettingsPage({
 	)
 }
 
-async function MembersSection({ projectId }: { projectId: string }) {
+async function MembersSection({
+	projectId,
+	organizationMembers,
+}: {
+	projectId: string
+	organizationMembers: User[]
+}) {
 	const members = await getProjectMembers(projectId)
 
 	async function handleAddMember(formData: FormData) {
@@ -124,7 +140,7 @@ async function MembersSection({ projectId }: { projectId: string }) {
 			</ul>
 
 			<form action={handleAddMember} className="flex gap-2 mt-4">
-				<Input name="memberId" placeholder="Enter user ID..." />
+				<AddMemberSelect organizationMembers={organizationMembers} />
 				<Button type="submit">Add Member</Button>
 			</form>
 		</div>

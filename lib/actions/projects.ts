@@ -119,19 +119,21 @@ export async function deleteProject(projectId: string) {
 export async function addProjectMember(projectId: string, memberId: string) {
 	checkIfOwner(projectId)
 
-	const membershipId = v7()
-	await db.insert(projectMemberships).values({
-		id: membershipId,
-		memberId,
-		projectId,
-	})
-
-	return {
-		id: membershipId,
-		memberId,
-		projectId,
-		joinedAt: new Date(),
-	}
+	const [memberExists] = await db
+		.select()
+		.from(projectMemberships)
+		.where(
+			and(
+				eq(projectMemberships.projectId, projectId),
+				eq(projectMemberships.memberId, memberId),
+			),
+		)
+	if (!memberExists)
+		await db.insert(projectMemberships).values({
+			id: v7(),
+			memberId,
+			projectId,
+		})
 }
 
 export async function removeProjectMember(projectId: string, memberId: string) {

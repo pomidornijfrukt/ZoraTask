@@ -43,7 +43,7 @@ export default function HomePage() {
 							variant="outline"
 							className="text-lg px-8 bg-transparent"
 						>
-							View Demo
+							<Link href="/projects">View Demo</Link>
 						</Button>
 					</div>
 				</div>
@@ -158,26 +158,25 @@ export default function HomePage() {
 				<div className="bg-card rounded-2xl p-12 border border-border">
 					<div className="text-center mb-12">
 						<h2 className="text-3xl font-bold text-card-foreground mb-4">
-							Trusted by Teams Worldwide
+							Trusted by Teams
 						</h2>
 						<p className="text-lg text-muted-foreground">
-							Join thousands of teams already using Zora to deliver better
-							projects faster.
+							Join teams already using Zora to deliver better projects faster.
 						</p>
 					</div>
 
 					<div className="grid md:grid-cols-3 gap-8 text-center">
 						<div>
-							<div className="text-4xl font-bold text-primary mb-2">10K+</div>
+							<div className="text-4xl font-bold text-primary mb-2">10+</div>
 							<div className="text-muted-foreground">Active Projects</div>
 						</div>
 						<div>
-							<div className="text-4xl font-bold text-primary mb-2">50K+</div>
+							<div className="text-4xl font-bold text-primary mb-2">50+</div>
 							<div className="text-muted-foreground">Tasks Completed</div>
 						</div>
 						<div>
 							<div className="text-4xl font-bold text-primary mb-2">99.9%</div>
-							<div className="text-muted-foreground">Uptime</div>
+							<div className="text-muted-foreground">Downtime</div>
 						</div>
 					</div>
 				</div>
@@ -209,11 +208,11 @@ export default function HomePage() {
 						<div className="flex items-center space-x-2">
 							<Kanban className="h-6 w-6 text-primary" />
 							<span className="text-lg font-semibold text-card-foreground">
-								Zora
+								<Link href="/">Zora</Link>
 							</span>
 						</div>
 						<p className="text-sm text-muted-foreground">
-							© 2024 Zora. Built for modern project management.
+							© 2025 Zora. Built for modern project management.
 						</p>
 					</div>
 				</div>

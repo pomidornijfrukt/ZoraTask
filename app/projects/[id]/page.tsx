@@ -277,13 +277,6 @@ export default async function ProjectPage({
 									</Link>
 								</Button>
 								<Button
-									variant="outline"
-									className="w-full justify-start bg-transparent"
-								>
-									<BarChart3 className="h-4 w-4 mr-2" />
-									View Reports
-								</Button>
-								<Button
 									asChild
 									variant="outline"
 									className="w-full justify-start bg-transparent"

@@ -21,7 +21,6 @@ import {
 	removeProjectMember,
 	updateProject,
 } from "@/lib/actions/projects"
-import { getOrganizationMembers } from "@/lib/actions/utils"
 import { getPrioritiesByProject, getProjectMembers } from "@/lib/data/projects"
 
 export default async function ProjectSettingsPage({

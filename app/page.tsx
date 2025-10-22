@@ -209,7 +209,7 @@ export default function HomePage() {
 						<div className="flex items-center space-x-2">
 							<Kanban className="h-6 w-6 text-primary" />
 							<span className="text-lg font-semibold text-card-foreground">
-								<Link href="/">Zora</Link>
+								Zora
 							</span>
 						</div>
 						<p className="text-sm text-muted-foreground">

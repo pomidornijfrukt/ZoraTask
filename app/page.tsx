@@ -42,6 +42,7 @@ export default function HomePage() {
 							size="lg"
 							variant="outline"
 							className="text-lg px-8 bg-transparent"
+							asChild={true}
 						>
 							<Link href="/projects">View Demo</Link>
 						</Button>

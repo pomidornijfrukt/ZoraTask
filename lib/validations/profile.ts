@@ -26,7 +26,7 @@ export const updateProfileSchema = z.object({
 				// allow empty/null
 				if (!val) return true
 				const date = new Date(val)
-				if (Number.isNaN(date.getTime())) return false
+				if (isNaN(date.getTime())) return false
 				const today = new Date()
 				today.setHours(0, 0, 0, 0)
 				date.setHours(0, 0, 0, 0)

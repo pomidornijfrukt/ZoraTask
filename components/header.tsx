@@ -1,12 +1,18 @@
 "use client"
 
 import {
-	OrganizationLogo,
 	OrganizationSwitcher,
 	UserAvatar,
 	UserButton,
 } from "@daveyplate/better-auth-ui"
-import { Bell, Building, Building2, FolderOpen, Home, Kanban, type LucideIcon } from "lucide-react"
+import {
+	Bell,
+	Building,
+	FolderOpen,
+	Home,
+	Kanban,
+	type LucideIcon,
+} from "lucide-react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"

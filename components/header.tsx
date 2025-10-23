@@ -19,7 +19,6 @@ import { useEffect, useState } from "react"
 import { getUserPendingInvitesCount } from "@/app/actions/invites"
 import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth/auth-client"
-import { cn } from "@/lib/utils"
 import { ThemeToggle } from "./theme-toggle"
 
 export function Header() {
@@ -68,43 +67,29 @@ export function Header() {
 				</div>
 			</div>
 
-			<div className="flex items-center space-x-2">
+			<div className="flex items-center space-x-4">
+				{/* Organization switcher */}
+				<OrganizationSwitcher
+					hidePersonal
+					trigger={
+						<button
+							type="button"
+							className="flex items-center gap-2 rounded-md border border-input bg-background px-2 py-2 h-9 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+						>
+							<Building className="size-5" />
+							<span className="hidden sm:inline-block">
+								{isPending ? "Loading..." : activeOrg?.name || "Organizations"}
+							</span>
+						</button>
+					}
+				/>
 				{/* Theme Picker */}
-				<div
-					className={cn(
-						"h-9 w-9 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-						isSignedIn && "order-3",
-					)}
-				>
 					<ThemeToggle />
-				</div>
 				{/* Auth buttons */}
 				{isSignedIn ? (
-					<>
-						{/* Organization switcher */}
-						<OrganizationSwitcher
-							hidePersonal
-							trigger={
-								<button
-									type="button"
-									className="flex items-center gap-2 rounded-md border border-input bg-background px-2 py-2 h-9 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-								>
-									<Building className="size-5" />
-									<span className="hidden sm:inline-block">
-										{isPending
-											? "Loading..."
-											: activeOrg?.name || "Organizations"}
-									</span>
-								</button>
-							}
-						/>
+					<div className="flex items-center space-x-2">
 						{/* Inbox button with notification badge */}
-						<Button
-							variant="ghost"
-							size="icon"
-							asChild
-							className="relative border border-input"
-						>
+						<Button variant="ghost" size="icon" asChild className="relative border border-input">
 							<Link href="/inbox">
 								<Bell className="h-4 w-4" />
 								{invitesCount > 0 && (
@@ -118,12 +103,12 @@ export function Header() {
 						<UserButton
 							size="icon"
 							trigger={
-								<button type="button" className="order-last">
+								<button type="button">
 									<UserAvatar user={session?.user} />
 								</button>
 							}
 						/>
-					</>
+					</div>
 				) : (
 					<Button variant="outline" asChild>
 						<Link href="/auth/sign-in">Sign in</Link>

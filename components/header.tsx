@@ -6,7 +6,7 @@ import {
 	UserAvatar,
 	UserButton,
 } from "@daveyplate/better-auth-ui"
-import { Bell, FolderOpen, Home, Kanban, type LucideIcon } from "lucide-react"
+import { Bell, Building, Building2, FolderOpen, Home, Kanban, type LucideIcon } from "lucide-react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -68,9 +68,9 @@ export function Header() {
 					trigger={
 						<button
 							type="button"
-							className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+							className="flex items-center gap-2 rounded-md border border-input bg-background px-2 py-2 h-9 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
 						>
-							<OrganizationLogo className="h-8 w-8" />
+							<Building className="size-5" />
 							<span className="hidden sm:inline-block">
 								{isPending ? "Loading..." : activeOrg?.name || "Organizations"}
 							</span>
@@ -78,7 +78,9 @@ export function Header() {
 					}
 				/>
 				{/* Theme Picker */}
-				<ThemeToggle />
+				<div className="h-9 w-9 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+					<ThemeToggle />
+				</div>
 				{/* Auth buttons */}
 				{isSignedIn ? (
 					<div className="flex items-center space-x-2">

@@ -38,14 +38,6 @@ export default function HomePage() {
 								<ArrowRight className="ml-2 h-5 w-5" />
 							</Link>
 						</Button>
-						<Button
-							size="lg"
-							variant="outline"
-							className="text-lg px-8 bg-transparent"
-							asChild={true}
-						>
-							<Link href="/projects">View Demo</Link>
-						</Button>
 					</div>
 				</div>
 			</section>
@@ -95,36 +87,6 @@ export default function HomePage() {
 					<Card className="bg-card border-border">
 						<CardHeader>
 							<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-								<BarChart3 className="h-6 w-6 text-primary" />
-							</div>
-							<CardTitle className="text-card-foreground">
-								Progress Tracking
-							</CardTitle>
-							<CardDescription>
-								Monitor project progress with detailed analytics and reporting
-								tools.
-							</CardDescription>
-						</CardHeader>
-					</Card>
-
-					<Card className="bg-card border-border">
-						<CardHeader>
-							<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-								<Zap className="h-6 w-6 text-primary" />
-							</div>
-							<CardTitle className="text-card-foreground">
-								Agile Workflows
-							</CardTitle>
-							<CardDescription>
-								Implement scrum, kanban, or hybrid methodologies with flexible
-								workflow configurations.
-							</CardDescription>
-						</CardHeader>
-					</Card>
-
-					<Card className="bg-card border-border">
-						<CardHeader>
-							<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
 								<CheckCircle className="h-6 w-6 text-primary" />
 							</div>
 							<CardTitle className="text-card-foreground">
@@ -137,20 +99,6 @@ export default function HomePage() {
 						</CardHeader>
 					</Card>
 
-					<Card className="bg-card border-border">
-						<CardHeader>
-							<div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-								<Clock className="h-6 w-6 text-primary" />
-							</div>
-							<CardTitle className="text-card-foreground">
-								Time Tracking
-							</CardTitle>
-							<CardDescription>
-								Monitor time spent on tasks and projects to improve estimation
-								and productivity.
-							</CardDescription>
-						</CardHeader>
-					</Card>
 				</div>
 			</section>
 

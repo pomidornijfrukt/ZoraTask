@@ -84,14 +84,12 @@ export function Header() {
 					}
 				/>
 				{/* Theme Picker */}
-				<div className="h-9 w-9 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground">
 					<ThemeToggle />
-				</div>
 				{/* Auth buttons */}
 				{isSignedIn ? (
 					<div className="flex items-center space-x-2">
 						{/* Inbox button with notification badge */}
-						<Button variant="outline" size="icon" asChild className="relative">
+						<Button variant="ghost" size="icon" asChild className="relative border border-input">
 							<Link href="/inbox">
 								<Bell className="h-4 w-4" />
 								{invitesCount > 0 && (

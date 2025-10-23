@@ -1,5 +1,6 @@
-import { Calendar, Plus, Users } from "lucide-react"
+import { Building, Calendar, Plus, Users } from "lucide-react"
 import { headers } from "next/headers"
+import Image from "next/image"
 import Link from "next/link"
 import CreateProjectDialog from "@/components/project/create-project-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -11,10 +12,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card"
-import { getOrganizations } from "@/lib/actions/organizations"
+import { getOrganization, getOrganizations } from "@/lib/actions/organizations"
 import { createProject } from "@/lib/actions/projects"
 import { auth } from "@/lib/auth"
 import { getProjectMembers, getProjects } from "@/lib/data/projects"
+import type { Project } from "@/lib/types"
 
 export default async function ProjectsPage() {
 	const session = await auth.api.getSession({
@@ -43,96 +45,9 @@ export default async function ProjectsPage() {
 				</div>
 
 				<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{projects.map(async (project) => {
-						const members = await getProjectMembers(project.id)
-
-						return (
-							<Card
-								key={project.id}
-								className="bg-card border-border hover:border-primary/50 transition-colors"
-							>
-								<CardHeader>
-									<div className="flex items-start justify-between">
-										<div className="flex-1">
-											<CardTitle className="text-card-foreground mb-2 truncate max-w-sm">
-												{project.name}
-											</CardTitle>
-											<CardDescription className="text-sm line-clamp-2">
-												{project.description || "No description provided."}
-											</CardDescription>
-										</div>
-									</div>
-								</CardHeader>
-
-								<CardContent>
-									<div className="space-y-4">
-										{/* Team Members */}
-										<div>
-											<div className="flex items-center gap-2 mb-2">
-												<Users className="h-4 w-4 text-muted-foreground" />
-												<span className="text-sm text-muted-foreground">
-													Team
-												</span>
-											</div>
-											<div className="flex -space-x-2">
-												{members.slice(0, 3).map((member) => (
-													<Avatar
-														key={member.id}
-														className="h-8 w-8 border-2 border-card"
-													>
-														<AvatarImage
-															src={member.image || "/placeholder.svg"}
-															alt={member.name}
-														/>
-														<AvatarFallback className="text-xs bg-muted text-muted-foreground">
-															{member.name
-																.split(" ")
-																.map((n) => n[0])
-																.join("")}
-														</AvatarFallback>
-													</Avatar>
-												))}
-												{members.length > 3 && (
-													<div className="h-8 w-8 rounded-full bg-muted border-2 border-card flex items-center justify-center">
-														<span className="text-xs text-muted-foreground">
-															+{members.length - 3}
-														</span>
-													</div>
-												)}
-											</div>
-										</div>
-
-										{/* Updated Date */}
-										<div className="flex items-center gap-2 text-sm text-muted-foreground">
-											<Calendar className="h-4 w-4" />
-											<span>
-												Updated{" "}
-												{new Date(project.updatedAt).toLocaleDateString()}
-											</span>
-										</div>
-
-										{/* Action Buttons */}
-										<div className="flex gap-2 pt-2">
-											<Button asChild={true} className="flex-1">
-												<Link href={`/projects/${project.id}`}>
-													View Overview
-												</Link>
-											</Button>
-											<Button
-												asChild={true}
-												variant="outline"
-												className="flex-1 bg-transparent"
-											>
-												<Link href={`/projects/${project.id}/board`}>
-													Open Board
-												</Link>
-											</Button>
-										</div>
-									</div>
-								</CardContent>
-							</Card>
-						)
-					})}
+					{projects.map(async (project) => (
+						<ProjectCard key={project.id} project={project} />
+					))}
 				</div>
 
 				{/* Empty State */}
@@ -151,5 +66,102 @@ export default async function ProjectsPage() {
 				)}
 			</div>
 		</div>
+	)
+}
+
+async function ProjectCard({ project }: { project: Project }) {
+	const members = await getProjectMembers(project.id)
+	const organization = await getOrganization(project.organizationId)
+	return (
+		<Card
+			key={project.id}
+			className="bg-card border-border hover:border-primary/50 transition-colors"
+		>
+			<CardHeader>
+				<div className="flex items-start justify-between">
+					<div className="flex-1">
+						<CardTitle className="text-card-foreground mb-2 truncate max-w-sm">
+							{project.name}
+						</CardTitle>
+						<CardDescription className="text-sm line-clamp-2">
+							{project.description || "No description provided."}
+						</CardDescription>
+						<div className="text-sm flex flex-row gap-2">
+							{organization.logo ? (
+								<Image
+									src={organization.logo}
+									alt={organization.name}
+									width={24}
+									height={24}
+								/>
+							) : (
+								<Building className="size-6" />
+							)}
+							{organization.name}
+						</div>
+					</div>
+				</div>
+			</CardHeader>
+
+			<CardContent>
+				<div className="space-y-4">
+					{/* Team Members */}
+					<div>
+						<div className="flex items-center gap-2 mb-2">
+							<Users className="h-4 w-4 text-muted-foreground" />
+							<span className="text-sm text-muted-foreground">Team</span>
+						</div>
+						<div className="flex -space-x-2">
+							{members.slice(0, 3).map((member) => (
+								<Avatar
+									key={member.id}
+									className="h-8 w-8 border-2 border-card"
+								>
+									<AvatarImage
+										src={member.image || "/placeholder.svg"}
+										alt={member.name}
+									/>
+									<AvatarFallback className="text-xs bg-muted text-muted-foreground">
+										{member.name
+											.split(" ")
+											.map((n) => n[0])
+											.join("")}
+									</AvatarFallback>
+								</Avatar>
+							))}
+							{members.length > 3 && (
+								<div className="h-8 w-8 rounded-full bg-muted border-2 border-card flex items-center justify-center">
+									<span className="text-xs text-muted-foreground">
+										+{members.length - 3}
+									</span>
+								</div>
+							)}
+						</div>
+					</div>
+
+					{/* Updated Date */}
+					<div className="flex items-center gap-2 text-sm text-muted-foreground">
+						<Calendar className="h-4 w-4" />
+						<span>
+							Updated {new Date(project.updatedAt).toLocaleDateString()}
+						</span>
+					</div>
+
+					{/* Action Buttons */}
+					<div className="flex gap-2 pt-2">
+						<Button asChild={true} className="flex-1">
+							<Link href={`/projects/${project.id}`}>View Overview</Link>
+						</Button>
+						<Button
+							asChild={true}
+							variant="outline"
+							className="flex-1 bg-transparent"
+						>
+							<Link href={`/projects/${project.id}/board`}>Open Board</Link>
+						</Button>
+					</div>
+				</div>
+			</CardContent>
+		</Card>
 	)
 }

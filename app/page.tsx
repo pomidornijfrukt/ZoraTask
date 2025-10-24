@@ -1,12 +1,4 @@
-import {
-	ArrowRight,
-	BarChart3,
-	CheckCircle,
-	Clock,
-	Kanban,
-	Users,
-	Zap,
-} from "lucide-react"
+import { ArrowRight, CheckCircle, Kanban, Users } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -98,7 +90,6 @@ export default function HomePage() {
 							</CardDescription>
 						</CardHeader>
 					</Card>
-
 				</div>
 			</section>
 

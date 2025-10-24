@@ -86,18 +86,21 @@ async function ProjectCard({ project }: { project: Project }) {
 						<CardDescription className="text-sm line-clamp-2">
 							{project.description || "No description provided."}
 						</CardDescription>
-						<div className="text-sm flex flex-row gap-2">
+						<div className="text-sm flex flex-row gap-2 mt-2">
 							{organization.logo ? (
 								<Image
 									src={organization.logo}
 									alt={organization.name}
 									width={24}
 									height={24}
+									className="rounded-full"
 								/>
 							) : (
-								<Building className="size-6" />
+								<Building className="size-6 p-0.5" />
 							)}
-							{organization.name}
+							<span className="flex items-center text-muted-foreground">
+								{organization.name}
+							</span>
 						</div>
 					</div>
 				</div>

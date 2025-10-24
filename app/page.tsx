@@ -90,7 +90,6 @@ export default function HomePage() {
 							</CardDescription>
 						</CardHeader>
 					</Card>
-
 				</div>
 			</section>
 

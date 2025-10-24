@@ -19,3 +19,11 @@ export async function getOrganizations(userId: string) {
 		.where(eq(member.userId, userId))
 	return organizations.map((o) => ({ ...o.organization }))
 }
+
+export async function getOrganization(organizationId: string) {
+	const [org] = await db
+		.select()
+		.from(organization)
+		.where(eq(organization.id, organizationId))
+	return org
+}

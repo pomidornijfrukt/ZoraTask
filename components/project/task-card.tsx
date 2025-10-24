@@ -43,7 +43,7 @@ interface TaskCardProps {
 	isLoading?: boolean
 	priorities: Priority[]
 	members: User[]
-	onViewDetails?: (taskId: string) => void
+	onViewDetails: (taskId: string) => void
 }
 
 export function TaskCard({
@@ -145,9 +145,10 @@ export function TaskCard({
 
 	return (
 		<Card
-			className="bg-background border-border cursor-move hover:border-primary/50 transition-colors"
+			className="bg-background border-border cursor-pointer hover:border-primary/50 transition-colors"
 			draggable={!isLoading}
 			onDragStart={(e) => handleDragStart(e, task)}
+			onClick={() => onViewDetails(task.id)}
 			style={{ opacity: isLoading ? 0.6 : 1 }}
 		>
 			<CardContent className="p-4">
@@ -178,9 +179,7 @@ export function TaskCard({
 
 								<DropdownMenuContent align="end">
 									<DropdownMenuItem
-										onClick={() => {
-											onViewDetails?.(task.id)
-										}}
+										onClick={() => onViewDetails(task.id)}
 										className="flex items-center gap-2"
 									>
 										<MessageSquare className="h-4 w-4" />
@@ -188,9 +187,7 @@ export function TaskCard({
 									</DropdownMenuItem>
 
 									<DropdownMenuItem
-										onClick={() => {
-											setEditOpen(true)
-										}}
+										onClick={() => setEditOpen(true)}
 										className="flex items-center gap-2"
 									>
 										<Edit className="h-4 w-4" />

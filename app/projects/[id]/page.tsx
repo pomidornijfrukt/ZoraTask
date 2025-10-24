@@ -1,4 +1,12 @@
-import { ArrowLeft, Calendar, Kanban, Settings, Users } from "lucide-react"
+import {
+	ArrowLeft,
+	Building,
+	Calendar,
+	Kanban,
+	Settings,
+	Users,
+} from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -11,6 +19,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card"
+import { getOrganization } from "@/lib/actions/organizations"
 import { getProject, getProjectMembers } from "@/lib/data/projects"
 import { getTaskMetadataById, getTasksByProject } from "@/lib/data/task"
 
@@ -27,8 +36,8 @@ export default async function ProjectPage({
 	}
 
 	const members = await getProjectMembers(id)
-
 	const tasks = await getTasksByProject(id)
+	const organization = await getOrganization(project.organizationId)
 	return (
 		<div className="min-h-screen bg-background">
 			<div className="container mx-auto px-4 py-8">
@@ -49,7 +58,23 @@ export default async function ProjectPage({
 								{project.name}
 							</h1>
 						</div>
-						<p className="text-muted-foreground mb-4">{project.description}</p>
+						<p className="text-muted-foreground mb-2">{project.description}</p>
+						<div className="text-sm flex flex-row gap-2 my-2">
+							{organization?.logo ? (
+								<Image
+									src={organization.logo}
+									alt={organization.name}
+									width={24}
+									height={24}
+									className="rounded-full"
+								/>
+							) : (
+								<Building className="size-6 p-0.5" />
+							)}
+							<span className="flex items-center text-muted-foreground">
+								{organization.name}
+							</span>
+						</div>
 						<div className="flex items-center gap-4 text-sm text-muted-foreground">
 							<div className="flex items-center gap-1">
 								<Calendar className="h-4 w-4" />

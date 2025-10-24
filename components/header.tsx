@@ -99,7 +99,12 @@ export function Header() {
 							}
 						/>
 						{/* Inbox button with notification badge */}
-						<Button variant="outline" size="icon" asChild className="relative">
+						<Button
+							variant="ghost"
+							size="icon"
+							asChild
+							className="relative border border-input"
+						>
 							<Link href="/inbox">
 								<Bell className="h-4 w-4" />
 								{invitesCount > 0 && (
